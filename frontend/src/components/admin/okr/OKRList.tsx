@@ -1,21 +1,15 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { createClient } from '@/lib/supabase/client'
-import { Plus, LayoutGrid, List as ListIcon, Loader2, Sparkles, Zap } from 'lucide-react'
-import Link from 'next/link'
+import { Plus, LayoutGrid, Loader2, Sparkles } from 'lucide-react'
 import OKRCard from './OKRCard'
 import CreateOKRModal from './CreateOKRModal'
-import { seedDashboardData } from '@/services/actions/okr'
-import { useRouter } from 'next/navigation'
+import { getOKRs } from '@/services/actions/okr'
 
 export default function OKRList() {
   const [objetivos, setObjetivos] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [seeding, setSeeding] = useState(false)
-  const router = useRouter()
-  const supabase = createClient()
 
   useEffect(() => {
     fetchOKRs()
@@ -23,32 +17,9 @@ export default function OKRList() {
 
   const fetchOKRs = async () => {
     setLoading(true)
-    const { data, error } = await supabase
-      .from('okr_objetivos')
-      .select(`
-        *,
-        krs:okr_resultados_clave(*)
-      `)
-      .order('created_at', { ascending: false })
-
-    if (data) setObjetivos(data)
+    const data = await getOKRs()
+    setObjetivos(data ?? [])
     setLoading(false)
-  }
-
-  const handleSeed = async () => {
-    if (!confirm('¿Quieres simular datos de asistencia, finanzas y rendimiento para este dashboard?')) return
-    
-    setSeeding(true)
-    const res = await seedDashboardData()
-    if (res.success) {
-      alert('¡Simulación completada! Los datos ahora son visibles.')
-      // No necesitamos router.refresh() si fetchOKRs hace el trabajo, pero 
-      // KPIStats es otro componente. Forzamos recarga de la página.
-      window.location.reload()
-    } else {
-      alert('Error en simulación: ' + (res.message || 'Error desconocido'))
-    }
-    setSeeding(false)
   }
 
   if (loading) {
@@ -74,15 +45,7 @@ export default function OKRList() {
           </div>
         </div>
         <div className="flex gap-2">
-          <button 
-            onClick={handleSeed}
-            disabled={seeding}
-            className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 rounded-xl shadow-sm hover:shadow-md transition-all active:scale-95 font-bold text-sm disabled:opacity-50"
-          >
-            {seeding ? <Loader2 className="animate-spin" size={18} /> : <Zap size={18} className="text-amber-500" />}
-            Simular Temporada
-          </button>
-          <button 
+          <button
             onClick={() => setIsModalOpen(true)}
             className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-200 dark:shadow-none transition-all active:scale-95 font-bold text-sm"
           >

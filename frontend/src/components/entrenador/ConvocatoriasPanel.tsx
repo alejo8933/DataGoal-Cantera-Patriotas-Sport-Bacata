@@ -14,7 +14,7 @@ type Partido = {
   categoria: string;
   estado: string;
   rival: string;
-  torneo: string;
+  torneo: string | null;
   estado_convocatoria: string;
   convocados_count: number;
 };
@@ -27,8 +27,8 @@ type Jugador = {
   numero_camiseta: number | null;
   activo: boolean;
   categoria: string | null;
-  asis: number;
-  rend: string;
+  asis: number | null;
+  rend: string | null;
   forma: string;
   estadoFisico: string;
 };
@@ -297,18 +297,30 @@ export default function ConvocatoriasPanel({
                                 <div className="hidden sm:flex items-center gap-4 text-center">
                                   <div className="flex flex-col">
                                     <span className="text-[10px] text-gray-400 uppercase font-semibold">Asis.</span>
-                                    <span className="text-xs font-bold text-gray-900">{jugador.asis}%</span>
+                                    <span className="text-xs font-bold text-gray-900">
+                                      {jugador.asis != null ? `${jugador.asis}%` : '—'}
+                                    </span>
                                   </div>
                                   <div className="flex flex-col">
                                     <span className="text-[10px] text-gray-400 uppercase font-semibold">Rend.</span>
-                                    <span className="text-xs font-bold text-gray-900">{jugador.rend}</span>
+                                    <span className="text-xs font-bold text-gray-900">{jugador.rend ?? '—'}</span>
                                   </div>
                                   <div className="flex flex-col">
                                     <span className="text-[10px] text-gray-400 uppercase font-semibold">Forma</span>
                                     <div className="flex items-center gap-0.5 justify-center mt-1">
-                                      <div className={`w-1.5 h-1.5 rounded-full ${jugador.rend >= "7.5" ? "bg-green-500" : "bg-yellow-500"}`}></div>
-                                      <div className={`w-1.5 h-1.5 rounded-full ${jugador.rend >= "7.5" ? "bg-green-500" : jugador.rend >= "6.0" ? "bg-yellow-500" : "bg-gray-300"}`}></div>
-                                      <div className={`w-1.5 h-1.5 rounded-full ${jugador.rend >= "8.5" ? "bg-green-500" : "bg-gray-300"}`}></div>
+                                      {jugador.rend != null ? (
+                                        <>
+                                          <div className={`w-1.5 h-1.5 rounded-full ${jugador.rend >= "7.5" ? "bg-green-500" : "bg-yellow-500"}`} />
+                                          <div className={`w-1.5 h-1.5 rounded-full ${jugador.rend >= "7.5" ? "bg-green-500" : jugador.rend >= "6.0" ? "bg-yellow-500" : "bg-gray-300"}`} />
+                                          <div className={`w-1.5 h-1.5 rounded-full ${jugador.rend >= "8.5" ? "bg-green-500" : "bg-gray-300"}`} />
+                                        </>
+                                      ) : (
+                                        <>
+                                          <div className="w-1.5 h-1.5 rounded-full bg-gray-200" />
+                                          <div className="w-1.5 h-1.5 rounded-full bg-gray-200" />
+                                          <div className="w-1.5 h-1.5 rounded-full bg-gray-200" />
+                                        </>
+                                      )}
                                     </div>
                                   </div>
                                 </div>

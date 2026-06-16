@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { CheckCircle2, AlertCircle, Clock, Zap, Loader2 } from 'lucide-react'
+import { CheckCircle2, AlertCircle, Zap, Loader2 } from 'lucide-react'
 import { getDashStats } from '@/services/actions/okr'
 
 interface KPIWidgetProps {
@@ -50,8 +50,6 @@ export default function KPIStats() {
     goles: 0,
     loading: true
   })
-
-  // const supabase = createClient() // Ya no lo necesitamos aquí
 
   useEffect(() => {
     const fetchStats = async () => {

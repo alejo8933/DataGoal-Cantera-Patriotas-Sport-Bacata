@@ -1,7 +1,6 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { revalidatePath } from 'next/cache'
 
 export async function getOKRs() {
   const supabase = await createClient()
@@ -98,49 +97,3 @@ export async function getDashStats() {
   }
 }
 
-export async function seedDashboardData() {
-  const supabase = await createClient()
-  
-  try {
-    // 1. Obtener jugadores reales
-    const { data: jugadores } = await supabase.from('jugadores').select('id, nombre, apellido').limit(20)
-    if (!jugadores || jugadores.length === 0) return { success: false, message: 'No hay jugadores en la base de datos' }
-
-    // 2. Crear un entrenamiento de prueba si no hay
-    const { data: ent } = await supabase.from('entrenamientos')
-      .upsert({ tipo: 'Sesión Táctica Elite', fecha: new Date().toISOString() })
-      .select().single()
-    const entId = ent?.id || 1
-
-    // 3. Simular Asistencias
-    const asistencias = jugadores.map(j => ({
-      jugador_id: j.id,
-      entrenamiento_id: entId,
-      presente: Math.random() < 0.85,
-      created_at: new Date().toISOString()
-    }))
-    await supabase.from('asistencias').upsert(asistencias)
-
-    // 4. Simular Finanzas
-    const facturas = jugadores.slice(0, 15).map(j => ({
-      jugador: `${j.nombre} ${j.apellido}`,
-      monto: 150000,
-      estado: Math.random() < 0.90 ? 'Pagado' : 'Pendiente',
-      fecha: new Date().toISOString().split('T')[0]
-    }))
-    await supabase.from('facturas').upsert(facturas)
-
-    // 5. Simular Goles (Actualizar en tabla jugadores)
-    for (const j of jugadores.slice(0, 10)) {
-      await supabase.from('jugadores')
-        .update({ goles: Math.floor(Math.random() * 5) + 2 })
-        .eq('id', j.id)
-    }
-
-    revalidatePath('/dashboard/admin/okr')
-    return { success: true }
-  } catch (error) {
-    console.error('Error in seedDashboardData:', error)
-    return { success: false, message: error instanceof Error ? error.message : 'Error desconocido' }
-  }
-}

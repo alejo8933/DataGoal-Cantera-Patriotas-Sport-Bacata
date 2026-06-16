@@ -2,7 +2,45 @@
 import { createClient } from "@/lib/supabase/server";
 import { notificarActividadAdmin } from "./notificaciones";
 
-export async function getPartidosParaConvocatoria() {
+// Tipos de contrato explícitos. Las columnas asis/rend son null hasta que
+// el módulo convocatorias tenga un caso de uso de estadísticas conectado.
+type PartidoConvocatoria = {
+  id: string;
+  equipo_local: string;
+  equipo_visitante: string;
+  fecha: string;
+  hora: string | null;
+  lugar: string | null;
+  categoria: string | null;
+  estado: string;
+  rival: string;
+  torneo: null; // columna no disponible en tabla partidos actualmente
+  estado_convocatoria: "Borrador" | "Nuevo";
+  convocados_count: number;
+};
+
+type JugadorConvocatoria = {
+  id: string;
+  nombre: string;
+  apellido: string;
+  posicion: string | null;
+  numero_camiseta: number | null;
+  activo: boolean;
+  categoria: string | null;
+  asis: null;         // pendiente: conectar a GetEstadisticasJugadorUseCase
+  rend: null;         // pendiente: conectar a GetEstadisticasJugadorUseCase
+  forma: string;
+  estadoFisico: string;
+};
+
+type RespuestaJugadoresConvocatoria = {
+  jugadores: JugadorConvocatoria[];
+  convocadosIds: string[];
+  notas: string;
+  convocatoriaId: string | undefined;
+};
+
+export async function getPartidosParaConvocatoria(): Promise<PartidoConvocatoria[]> {
   const supabase = await createClient();
   
   // Obtenemos los partidos
@@ -21,20 +59,19 @@ export async function getPartidosParaConvocatoria() {
   const convocatoriasMap = new Map((convocatorias ?? []).map(c => [c.partido_id, c]));
 
   return partidos.map((p) => {
-    // Simulamos un torneo o campeonato si no lo hay en DB
     const rival = p.equipo_visitante && p.equipo_visitante !== "Patriotas" ? p.equipo_visitante : p.equipo_local;
     const conv = convocatoriasMap.get(p.id);
     return {
       ...p,
       rival,
-      torneo: "Liga de Bogotá", // Placeholder
+      torneo: null,
       estado_convocatoria: conv ? "Borrador" : "Nuevo",
       convocados_count: conv?.convocatoria_jugadores?.length ?? 0
     }
   });
 }
 
-export async function getJugadoresParaConvocatoria(partidoId: string) {
+export async function getJugadoresParaConvocatoria(partidoId: string): Promise<RespuestaJugadoresConvocatoria> {
   const supabase = await createClient();
 
   // Obtenemos el partido para saber la categoría
@@ -44,7 +81,7 @@ export async function getJugadoresParaConvocatoria(partidoId: string) {
     .eq("id", partidoId)
     .single();
 
-  if (!partido) return { jugadores: [], convocadosIds: [], notas: "" };
+  if (!partido) return { jugadores: [], convocadosIds: [], notas: "", convocatoriaId: undefined };
 
   const { data: jugadoresDb } = await supabase
     .from("jugadores")
@@ -68,21 +105,13 @@ export async function getJugadoresParaConvocatoria(partidoId: string) {
   const convocadosIds = (convocatoria?.convocatoria_jugadores ?? []).map((cj: any) => cj.jugador_id);
   const notas = convocatoria?.notas ?? "";
 
-  // Agregamos stats falsos provisionales y calculamos Asistencia real si queremos
-  // Por ahora Mockeamos Rend, Forma y Estado para coincidir con el frontend
-  const jugadoresConStats = jugadoresFiltered.map(j => {
-    // Calculo mock de asistencia alta
-    const randomAsis = Math.floor(Math.random() * 20) + 80; 
-    const randomRend = (Math.random() * 3 + 6.5).toFixed(1);
-
-    return {
-      ...j,
-      asis: randomAsis,
-      rend: randomRend,
-      forma: ["Buena", "Regular", "Pendiente"][Math.floor(Math.random() * 3)],
-      estadoFisico: "Disponible" // Simulado
-    };
-  });
+  const jugadoresConStats = jugadoresFiltered.map(j => ({
+    ...j,
+    asis: null,
+    rend: null,
+    forma: "Disponible",
+    estadoFisico: "Disponible",
+  }));
 
   return {
     jugadores: jugadoresConStats,
@@ -92,7 +121,7 @@ export async function getJugadoresParaConvocatoria(partidoId: string) {
   };
 }
 
-export async function guardarConvocatoriaBulk(partidoId: string, jugadorIds: string[], notas: string) {
+export async function guardarConvocatoriaBulk(partidoId: string, jugadorIds: string[], notas: string): Promise<void> {
   const supabase = await createClient();
 
   // Verificar si ya existe
