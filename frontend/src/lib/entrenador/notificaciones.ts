@@ -1,27 +1,36 @@
 "use server";
 import { createClient } from "@/lib/supabase/server";
 import { obtenerIdsPorRol } from "@/lib/actions/usuarios.actions";
+import { SupabaseNotificacionRepository } from "@backend/modules/notificaciones/infrastructure/SupabaseNotificacionRepository";
+import { GetNotificacionesDelUsuarioUseCase } from "@backend/modules/notificaciones/use-cases/GetNotificacionesDelUsuarioUseCase";
+import { EnviarNotificacionAUsuariosUseCase } from "@backend/modules/notificaciones/use-cases/EnviarNotificacionAUsuariosUseCase";
 
 export async function getNotificaciones() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
 
-  const { data } = await supabase
-    .from("notificaciones")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
-
-  return data ?? [];
+  const useCase = new GetNotificacionesDelUsuarioUseCase(
+    new SupabaseNotificacionRepository(supabase),
+  );
+  const rows = await useCase.execute(user.id);
+  // Compatibilidad con shape esperado por NotificacionesPanel: tipo y prioridad como string.
+  return rows.map((n) => ({
+    id: n.id,
+    user_id: n.user_id,
+    titulo: n.titulo,
+    descripcion: n.descripcion,
+    tipo: n.tipo ?? '',
+    prioridad: n.prioridad ?? '',
+    leida: n.leida,
+    created_at: n.created_at,
+  }));
 }
 
 export async function marcarLeida(id: string) {
   const supabase = await createClient();
-  await supabase
-    .from("notificaciones")
-    .update({ leida: true })
-    .eq("id", id);
+  const repo = new SupabaseNotificacionRepository(supabase);
+  await repo.marcarLeida(id);
 }
 
 export async function marcarTodasLeidas() {
@@ -29,16 +38,14 @@ export async function marcarTodasLeidas() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
-  await supabase
-    .from("notificaciones")
-    .update({ leida: true })
-    .eq("user_id", user.id)
-    .eq("leida", false);
+  const repo = new SupabaseNotificacionRepository(supabase);
+  await repo.marcarTodasLeidasDelUsuario(user.id);
 }
 
 export async function eliminarNotificacion(id: string) {
   const supabase = await createClient();
-  await supabase.from("notificaciones").delete().eq("id", id);
+  const repo = new SupabaseNotificacionRepository(supabase);
+  await repo.delete(id);
 }
 
 export async function crearNotificacion({
@@ -55,8 +62,15 @@ export async function crearNotificacion({
   prioridad?: string;
 }) {
   const supabase = await createClient();
-  await supabase.from("notificaciones").insert({
-    user_id, titulo, descripcion, tipo, prioridad,
+  const useCase = new EnviarNotificacionAUsuariosUseCase(
+    new SupabaseNotificacionRepository(supabase),
+  );
+  await useCase.execute({
+    userIds: [user_id],
+    titulo,
+    descripcion,
+    tipo,
+    prioridad,
   });
 }
 
@@ -75,15 +89,16 @@ export async function notificarActividadAdmin({
   if (adminIds.length === 0) return;
 
   const supabase = await createClient();
-  const notificationsToInsert = adminIds.map((adminId) => ({
-    user_id: adminId,
+  const useCase = new EnviarNotificacionAUsuariosUseCase(
+    new SupabaseNotificacionRepository(supabase),
+  );
+  await useCase.execute({
+    userIds: adminIds,
     titulo,
     descripcion,
     tipo,
     prioridad,
-  }));
-
-  await supabase.from("notificaciones").insert(notificationsToInsert);
+  });
 }
 
 export async function enviarNotificacionMasiva({
@@ -105,19 +120,20 @@ export async function enviarNotificacionMasiva({
   }
 
   const supabase = await createClient();
-  const notifications = userIds.map((userId) => ({
-    user_id: userId,
-    titulo,
-    descripcion,
-    tipo,
-    prioridad,
-  }));
+  const useCase = new EnviarNotificacionAUsuariosUseCase(
+    new SupabaseNotificacionRepository(supabase),
+  );
 
-  const { error: insertError } = await supabase.from('notificaciones').insert(notifications);
-  
-  if (insertError) {
-    return { success: false, error: insertError.message };
+  try {
+    const result = await useCase.execute({
+      userIds,
+      titulo,
+      descripcion,
+      tipo,
+      prioridad,
+    });
+    return { success: true, count: result.enviadas };
+  } catch (err: any) {
+    return { success: false, error: err?.message ?? 'Error al enviar notificaciones' };
   }
-
-  return { success: true, count: userIds.length };
 }

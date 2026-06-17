@@ -74,11 +74,12 @@ export default function OKRList() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {objetivos.map((okr) => (
-            <OKRCard 
+            <OKRCard
               key={okr.id}
               titulo={okr.titulo}
               descripcion={okr.descripcion}
               tipo={okr.tipo}
+              progresoPromedio={okr.progreso_promedio}
               krs={okr.krs}
             />
           ))}

@@ -3,7 +3,8 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Download, Eye, EyeOff, ShieldCheck, RefreshCw } from 'lucide-react'
-import { MatrixData, generarMatrizUsuario } from '@/lib/actions/usuarios.actions'
+import { generarMatrizUsuario } from '@/lib/actions/usuarios.actions'
+import type { MatrixData } from '@/lib/actions/usuarios.types'
 
 interface MatrixCardProps {
   initialMatrix?: MatrixData

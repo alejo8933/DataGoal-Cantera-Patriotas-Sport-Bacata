@@ -1,6 +1,12 @@
 "use server";
 import { createClient } from "@/lib/supabase/server";
 import { notificarActividadAdmin } from "./notificaciones";
+import { SupabasePartidoRepository } from "@backend/modules/partidos/infrastructure/SupabasePartidoRepository";
+import { SupabaseJugadorRepository } from "@backend/modules/jugadores/infrastructure/SupabaseJugadorRepository";
+import { SupabaseConvocatoriaRepository } from "@backend/modules/convocatorias/infrastructure/SupabaseConvocatoriaRepository";
+import { GetJugadoresParaConvocatoriaUseCase } from "@backend/modules/convocatorias/use-cases/GetJugadoresParaConvocatoriaUseCase";
+import { GuardarConvocatoriaUseCase } from "@backend/modules/convocatorias/use-cases/GuardarConvocatoriaUseCase";
+import { GetPartidoByIdUseCase } from "@backend/modules/partidos/use-cases/GetPartidoByIdUseCase";
 
 // Tipos de contrato explícitos. Las columnas asis/rend son null hasta que
 // el módulo convocatorias tenga un caso de uso de estadísticas conectado.
@@ -74,100 +80,57 @@ export async function getPartidosParaConvocatoria(): Promise<PartidoConvocatoria
 export async function getJugadoresParaConvocatoria(partidoId: string): Promise<RespuestaJugadoresConvocatoria> {
   const supabase = await createClient();
 
-  // Obtenemos el partido para saber la categoría
-  const { data: partido } = await supabase
-    .from("partidos")
-    .select("id, categoria")
-    .eq("id", partidoId)
-    .single();
-
-  if (!partido) return { jugadores: [], convocadosIds: [], notas: "", convocatoriaId: undefined };
-
-  const { data: jugadoresDb } = await supabase
-    .from("jugadores")
-    .select("id, nombre, apellido, posicion, numero_camiseta, activo, categoria")
-    .eq("activo", true)
-    // Opcional: filtrar por categoría. Si partido.categoria es nulo, trae todos.
-    // .eq("categoria", partido.categoria) <-- Comentado para no romper si la data es imperfecta, pero lo filtraremos en el cliente
-    .order("apellido", { ascending: true });
-
-  const jugadoresFiltered = (jugadoresDb ?? []).filter(j => 
-    !partido.categoria || j.categoria === partido.categoria || partido.categoria === "Todos"
+  const useCase = new GetJugadoresParaConvocatoriaUseCase(
+    new SupabasePartidoRepository(supabase),
+    new SupabaseJugadorRepository(supabase),
+    new SupabaseConvocatoriaRepository(supabase),
   );
 
-  // Obtener la convocatoria actual si la hay
-  const { data: convocatoria } = await supabase
-    .from("convocatorias")
-    .select("id, notas, convocatoria_jugadores(jugador_id)")
-    .eq("partido_id", partidoId)
-    .single();
+  const result = await useCase.execute(partidoId);
 
-  const convocadosIds = (convocatoria?.convocatoria_jugadores ?? []).map((cj: any) => cj.jugador_id);
-  const notas = convocatoria?.notas ?? "";
-
-  const jugadoresConStats = jugadoresFiltered.map(j => ({
-    ...j,
-    asis: null,
-    rend: null,
-    forma: "Disponible",
-    estadoFisico: "Disponible",
-  }));
+  const jugadoresOrdenados = [...result.jugadores].sort((a, b) =>
+    a.apellido.localeCompare(b.apellido),
+  );
 
   return {
-    jugadores: jugadoresConStats,
-    convocadosIds,
-    notas,
-    convocatoriaId: convocatoria?.id
+    jugadores: jugadoresOrdenados.map((j) => ({
+      id: j.id,
+      nombre: j.nombre,
+      apellido: j.apellido,
+      posicion: j.posicion,
+      numero_camiseta: j.numeroCamiseta,
+      activo: j.activo,
+      categoria: j.categoriaId,
+      asis: null,
+      rend: null,
+      forma: "Disponible",
+      estadoFisico: "Disponible",
+    })),
+    convocadosIds: result.convocadosIds,
+    notas: result.notas,
+    convocatoriaId: result.convocatoriaId,
   };
 }
 
 export async function guardarConvocatoriaBulk(partidoId: string, jugadorIds: string[], notas: string): Promise<void> {
   const supabase = await createClient();
 
-  // Verificar si ya existe
-  const { data: existente } = await supabase
-    .from("convocatorias")
-    .select("id")
-    .eq("partido_id", partidoId)
-    .single();
+  const guardarUseCase = new GuardarConvocatoriaUseCase(
+    new SupabaseConvocatoriaRepository(supabase),
+  );
+  const { jugadoresCount } = await guardarUseCase.execute({ partidoId, jugadorIds, notas });
 
-  let convId = existente?.id;
+  // Notificación al admin: orquestación externa, no es dominio de convocatorias.
+  const partidoUseCase = new GetPartidoByIdUseCase(new SupabasePartidoRepository(supabase));
+  const partido = await partidoUseCase.execute(partidoId);
 
-  if (!convId) {
-    const { data: nueva } = await supabase
-      .from("convocatorias")
-      .insert({ partido_id: partidoId, fecha: new Date().toISOString() })
-      .select("id")
-      .single();
-    if (nueva) convId = nueva.id;
-  } else {
-    // Si queremos habilitar notas después, se puede hacer acá
-  }
-
-  if (!convId) throw new Error("No se pudo crear/recuperar la convocatoria");
-
-  // Borrar previas listadas e insertar nuevas (replace)
-  await supabase.from("convocatoria_jugadores").delete().eq("convocatoria_id", convId);
-
-  if (jugadorIds.length > 0) {
-    const payload = jugadorIds.map(jid => ({
-      convocatoria_id: convId,
-      jugador_id: jid
-    }));
-    await supabase.from("convocatoria_jugadores").insert(payload);
-  }
-
-  // Notificar al administrador
-  const { data: partido } = await supabase
-    .from("partidos")
-    .select("equipo_local, equipo_visitante, fecha")
-    .eq("id", partidoId)
-    .single();
+  const local = partido?.equipoLocal ?? '?';
+  const visitante = partido?.equipoVisitante ?? '?';
 
   await notificarActividadAdmin({
     titulo: 'Convocatoria Registrada',
-    descripcion: `Se ha registrado una nueva convocatoria para el partido ${partido?.equipo_local} vs ${partido?.equipo_visitante}. ${jugadorIds.length} jugadores convocados.`,
-    tipo: 'convocatoria'
+    descripcion: `Se ha registrado una nueva convocatoria para el partido ${local} vs ${visitante}. ${jugadoresCount} jugadores convocados.`,
+    tipo: 'convocatoria',
   });
 }
 

@@ -2,14 +2,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { notificarActividadAdmin } from "./notificaciones";
+import { SupabaseLesionRepository } from "@backend/modules/lesiones/infrastructure/SupabaseLesionRepository";
+import { GetLesionesUseCase } from "@backend/modules/lesiones/use-cases/GetLesionesUseCase";
+import { RegistrarLesionUseCase } from "@backend/modules/lesiones/use-cases/RegistrarLesionUseCase";
+import { EliminarLesionUseCase } from "@backend/modules/lesiones/use-cases/EliminarLesionUseCase";
 
 export async function getLesiones() {
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("lesiones")
-    .select("id, descripcion, estado, fecha_lesion, fecha_retorno, jugador_id, jugadores(nombre, apellido, numero_camiseta, posicion, categoria)")
-    .order("fecha_lesion", { ascending: false });
-  return data ?? [];
+  const useCase = new GetLesionesUseCase(new SupabaseLesionRepository(supabase));
+  return useCase.execute();
 }
 
 export async function getJugadoresParaLesiones() {
@@ -35,7 +36,7 @@ export async function registrarLesion(formData: FormData) {
   const tratamiento = formData.get("tratamiento") as string;
   const notas = formData.get("notas") as string;
   const restricciones = formData.get("restricciones") as string; // ignoradas por ahora / concatenadas
-  
+
   // Guardamos todo el compendio del form en la base de datos dentro del campo descripcion
   const compendio = JSON.stringify({
     tipo: tipo_lesion,
@@ -47,12 +48,13 @@ export async function registrarLesion(formData: FormData) {
     restricciones: restricciones
   });
 
-  await supabase.from("lesiones").insert({
-    jugador_id,
-    fecha_lesion,
-    fecha_retorno: retorno_estimado,
+  const useCase = new RegistrarLesionUseCase(new SupabaseLesionRepository(supabase));
+  await useCase.execute({
+    jugadorId: jugador_id,
+    fechaLesion: fecha_lesion,
+    fechaRetorno: retorno_estimado || null,
+    descripcion: compendio,
     estado: "activo",
-    descripcion: compendio
   });
 
   revalidatePath("/dashboard/entrenador/lesiones");
@@ -75,21 +77,14 @@ export async function registrarLesion(formData: FormData) {
 
 export async function eliminarLesion(id: string) {
   const supabase = await createClient();
-  
-  // Obtener info antes de borrar para notificar
-  const { data: lesion } = await supabase
-    .from("lesiones")
-    .select("jugador_id, descripcion, jugadores(nombre, apellido)")
-    .eq("id", id)
-    .single();
 
-  await supabase.from("lesiones").delete().eq("id", id);
-  
-  if (lesion && lesion.jugadores) {
-    const j = lesion.jugadores as unknown as { nombre: string; apellido: string };
+  const useCase = new EliminarLesionUseCase(new SupabaseLesionRepository(supabase));
+  const { eliminada, jugador } = await useCase.execute(id);
+
+  if (eliminada && jugador) {
     await notificarActividadAdmin({
       titulo: 'Lesión Eliminada',
-      descripcion: `Se ha eliminado el reporte de lesión del jugador ${j.nombre} ${j.apellido}.`,
+      descripcion: `Se ha eliminado el reporte de lesión del jugador ${jugador.nombre} ${jugador.apellido}.`,
       tipo: 'lesion_eliminada'
     });
   }

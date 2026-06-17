@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShieldAlert, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
-import { MatrixData, validarRetoMatriz } from '@/lib/actions/usuarios.actions'
+import { validarRetoMatriz } from '@/lib/actions/usuarios.actions'
+import type { MatrixData } from '@/lib/actions/usuarios.types'
 
 interface MatrixChallengeProps {
   onSuccess: () => void

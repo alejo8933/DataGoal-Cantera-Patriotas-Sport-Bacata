@@ -9,9 +9,9 @@ type Partido = {
   equipo_local: string;
   equipo_visitante: string;
   fecha: string;
-  hora: string;
-  lugar: string;
-  categoria: string;
+  hora: string | null;
+  lugar: string | null;
+  categoria: string | null;
   estado: string;
   rival: string;
   torneo: string | null;

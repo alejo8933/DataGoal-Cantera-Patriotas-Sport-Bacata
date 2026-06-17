@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Edit2, X, Loader2 } from 'lucide-react'
 import { editarJugador } from '@/services/actions/jugadores'
-import { createClient } from '@/lib/supabase/client'
+import { getCategoriasYEquiposParaSelectores } from '@/services/actions/categorias_maestras'
 
 interface ModalEditarJugadorProps {
   jugador: {
@@ -34,9 +34,8 @@ export default function ModalEditarJugador({ jugador }: ModalEditarJugadorProps)
     if (isOpen) {
       const fetchData = async () => {
         setLoadingData(true)
-        const supabase = createClient()
-        const { data: catData } = await supabase.from('categorias_maestras').select('id, nombre').eq('activo', true)
-        const { data: eqData } = await supabase.from('rendimiento_equipos').select('id, equipo, categoria_id').eq('activo', true)
+        const { categoriasMaestras: catData, equipos: eqData } =
+          await getCategoriasYEquiposParaSelectores()
         if (catData) setCategoriasMaestras(catData)
         if (eqData) setEquipos(eqData)
         setLoadingData(false)

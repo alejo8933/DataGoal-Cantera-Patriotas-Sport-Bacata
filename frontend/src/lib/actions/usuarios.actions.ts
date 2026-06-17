@@ -28,9 +28,8 @@ import {
 import { CambiarPasswordUseCase } from '@backend/modules/usuarios/use-cases/CambiarPasswordUseCase';
 import { AppError } from '@backend/shared/errors/AppError';
 import type { UsuarioResponseDTO, PerfilResumenDTO } from '@backend/modules/usuarios/dtos/UsuarioResponseDTO';
-import type { MatrizResponseDTO } from '@backend/modules/usuarios/dtos/MatrizResponseDTO';
 import type { RolUsuario } from '@backend/modules/usuarios/domain/entities/UsuarioEntity';
-export type MatrixData = MatrizResponseDTO;
+import type { MatrixData } from './usuarios.types';
 
 function getUsuarioRepo(supabase: Awaited<ReturnType<typeof createClient>>) {
   return new SupabaseUsuarioRepository(supabase);
@@ -386,4 +385,3 @@ export async function obtenerPerfilPorId(userId: string): Promise<UsuarioRespons
   }
 }
 
-export type { UsuarioResponseDTO, PerfilResumenDTO };

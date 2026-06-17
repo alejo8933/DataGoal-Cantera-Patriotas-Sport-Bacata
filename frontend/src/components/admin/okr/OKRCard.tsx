@@ -16,15 +16,11 @@ interface OKRCardProps {
   titulo: string
   descripcion: string
   tipo: 'Club' | 'Categoria' | 'Personal'
+  progresoPromedio: number
   krs: KR[]
 }
 
-export default function OKRCard({ titulo, descripcion, tipo, krs }: OKRCardProps) {
-  // Calcular progreso total como promedio de los KRs
-  const totalProgress = krs.length > 0 
-    ? Math.round(krs.reduce((acc, kr) => acc + (kr.valor_actual / kr.valor_meta), 0) / krs.length * 100)
-    : 0
-
+export default function OKRCard({ titulo, descripcion, tipo, progresoPromedio, krs }: OKRCardProps) {
   const getStatusColor = (progress: number) => {
     if (progress >= 70) return 'from-emerald-500 to-teal-600'
     if (progress >= 30) return 'from-amber-500 to-orange-600'
@@ -53,7 +49,7 @@ export default function OKRCard({ titulo, descripcion, tipo, krs }: OKRCardProps
       </div>
 
       <div className="flex items-start gap-4 mb-6">
-        <div className={`p-3 rounded-2xl bg-gradient-to-br ${getStatusColor(totalProgress)} text-white shadow-lg`}>
+        <div className={`p-3 rounded-2xl bg-gradient-to-br ${getStatusColor(progresoPromedio)} text-white shadow-lg`}>
           <Target size={24} />
         </div>
         <div>
@@ -70,14 +66,14 @@ export default function OKRCard({ titulo, descripcion, tipo, krs }: OKRCardProps
       <div className="mb-8">
         <div className="flex justify-between items-end mb-2">
           <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Progreso Global</span>
-          <span className="text-2xl font-black text-slate-900 dark:text-white">{totalProgress}%</span>
+          <span className="text-2xl font-black text-slate-900 dark:text-white">{progresoPromedio}%</span>
         </div>
         <div className="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
           <motion.div 
             initial={{ width: 0 }}
-            animate={{ width: `${totalProgress}%` }}
+            animate={{ width: `${progresoPromedio}%` }}
             transition={{ duration: 1.5, ease: "easeOut" }}
-            className={`h-full bg-gradient-to-r ${getStatusColor(totalProgress)}`}
+            className={`h-full bg-gradient-to-r ${getStatusColor(progresoPromedio)}`}
           />
         </div>
       </div>
