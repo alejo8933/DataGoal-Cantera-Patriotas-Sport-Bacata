@@ -4,9 +4,9 @@ export type RolUsuario = 'admin' | 'entrenador' | 'jugador' | 'auxiliar' | 'coor
 
 export interface UsuarioProps {
   id: string;
-  email: string;
-  nombre: string;
-  apellido: string;
+  email: string | null;
+  nombre: string | null;
+  apellido: string | null;
   rol: RolUsuario;
   telefono: string | null;
   fechaNacimiento: string | null;
@@ -29,18 +29,18 @@ export class UsuarioEntity {
 
   private validate(props: UsuarioProps): void {
     if (!props.id) throw new AppError('El ID de usuario es obligatorio.', 400);
-    if (!props.email.trim()) throw new AppError('El correo es obligatorio.', 400);
-    if (!props.nombre.trim()) throw new AppError('El nombre es obligatorio.', 400);
-    if (!props.apellido.trim()) throw new AppError('El apellido es obligatorio.', 400);
+    if (props.email !== null && !props.email.trim()) throw new AppError('El correo es obligatorio.', 400);
+    if (props.nombre !== null && !props.nombre.trim()) throw new AppError('El nombre es obligatorio.', 400);
+    if (props.apellido !== null && !props.apellido.trim()) throw new AppError('El apellido es obligatorio.', 400);
     if (!ROLES_PERMITIDOS.includes(props.rol)) {
       throw new AppError('El rol seleccionado no es válido.', 400);
     }
   }
 
   get id(): string { return this.props.id; }
-  get email(): string { return this.props.email; }
-  get nombre(): string { return this.props.nombre; }
-  get apellido(): string { return this.props.apellido; }
+  get email(): string | null { return this.props.email; }
+  get nombre(): string | null { return this.props.nombre; }
+  get apellido(): string | null { return this.props.apellido; }
   get rol(): RolUsuario { return this.props.rol; }
   get telefono(): string | null { return this.props.telefono; }
   get fechaNacimiento(): string | null { return this.props.fechaNacimiento; }
@@ -51,17 +51,17 @@ export class UsuarioEntity {
   get activo(): boolean { return this.props.activo; }
 
   getNombreCompleto(): string {
-    return `${this.props.nombre} ${this.props.apellido}`.trim();
+    return `${this.props.nombre ?? ''} ${this.props.apellido ?? ''}`.trim();
   }
 
   actualizarPerfil(data: Partial<Pick<UsuarioProps, 'nombre' | 'apellido' | 'telefono' | 'genero' | 'documento' | 'fechaNacimiento'>>): void {
     if (data.nombre !== undefined) {
-      if (!data.nombre.trim()) throw new AppError('El nombre es obligatorio.', 400);
-      this.props.nombre = data.nombre.trim();
+      if (data.nombre !== null && !data.nombre.trim()) throw new AppError('El nombre es obligatorio.', 400);
+      this.props.nombre = data.nombre !== null ? data.nombre.trim() : null;
     }
     if (data.apellido !== undefined) {
-      if (!data.apellido.trim()) throw new AppError('El apellido es obligatorio.', 400);
-      this.props.apellido = data.apellido.trim();
+      if (data.apellido !== null && !data.apellido.trim()) throw new AppError('El apellido es obligatorio.', 400);
+      this.props.apellido = data.apellido !== null ? data.apellido.trim() : null;
     }
     if (data.telefono !== undefined) this.props.telefono = data.telefono;
     if (data.genero !== undefined) this.props.genero = data.genero;

@@ -337,7 +337,7 @@ export async function actualizarPerfilJugador(data: {
   }
 }
 
-export async function obtenerEntrenadores(): Promise<Array<{ id: string; nombre: string; apellido: string }>> {
+export async function obtenerEntrenadores(): Promise<Array<{ id: string; nombre: string | null; apellido: string | null }>> {
   try {
     const supabase = await createClient();
     const useCase = new GetPerfilesByRolUseCase(getUsuarioRepo(supabase));

@@ -2,9 +2,9 @@ import { RolUsuario } from '../domain/entities/UsuarioEntity';
 
 export interface UsuarioResponseDTO {
   id: string;
-  email: string;
-  nombre: string;
-  apellido: string;
+  email: string | null;
+  nombre: string | null;
+  apellido: string | null;
   nombreCompleto: string;
   rol: RolUsuario;
   telefono: string | null;
@@ -19,6 +19,6 @@ export interface UsuarioResponseDTO {
 export interface PerfilResumenDTO {
   rol: RolUsuario;
   activo: boolean;
-  nombre: string;
-  apellido: string;
+  nombre: string | null;
+  apellido: string | null;
 }

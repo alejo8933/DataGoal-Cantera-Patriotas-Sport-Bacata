@@ -5,9 +5,9 @@ export class UsuarioMapper {
   static toDomain(row: Record<string, unknown>): UsuarioEntity {
     return new UsuarioEntity({
       id: row.id as string,
-      email: (row.email as string) ?? '',
-      nombre: (row.nombre as string) ?? '',
-      apellido: (row.apellido as string) ?? '',
+      email: (row.email as string | null) ?? null,
+      nombre: (row.nombre as string | null) ?? null,
+      apellido: (row.apellido as string | null) ?? null,
       rol: (row.rol as UsuarioEntity['rol']) ?? 'jugador',
       telefono: (row.telefono as string | null) ?? null,
       fechaNacimiento: (row.fecha_nacimiento as string | null) ?? null,

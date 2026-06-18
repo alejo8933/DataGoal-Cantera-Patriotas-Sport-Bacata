@@ -130,7 +130,7 @@ export default function JugadorPerfilPage() {
 
   const { perfil, jugador } = data
   const nombreCompleto =
-    `${nombre} ${apellido}`.trim() || perfil.email.split('@')[0]
+    `${nombre} ${apellido}`.trim() || perfil.email?.split('@')[0] || 'Sin nombre'
   const categoria = perfil.categoria || jugador?.categoria || 'General'
   const posicion = perfil.posicion || jugador?.posicion || 'Polivalente'
 

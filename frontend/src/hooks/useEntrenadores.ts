@@ -5,8 +5,8 @@ import { obtenerEntrenadores } from '@/lib/actions/usuarios.actions'
 
 export interface Entrenador {
   id: string
-  nombre: string
-  apellido: string
+  nombre: string | null
+  apellido: string | null
 }
 
 export function useEntrenadores() {
