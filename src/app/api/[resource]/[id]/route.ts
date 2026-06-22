@@ -1,10 +1,16 @@
 import { NextResponse } from 'next/server'
-import { getResourceById, updateResource, deleteResource, requireAuthenticatedUser, ApiError } from '@/lib/api/resourceService'
+import {
+  getResourceById,
+  updateResource,
+  deleteResource,
+  requireAuthenticatedUserWithRole,
+  ApiError,
+} from '@/lib/api/resourceService'
 
 export async function GET(request: Request, { params }: { params: { resource: string; id: string } }) {
   try {
-    await requireAuthenticatedUser()
-    const item = await getResourceById(params.resource, params.id)
+    const user = await requireAuthenticatedUserWithRole(params.resource, 'get')
+    const item = await getResourceById(params.resource, params.id, user)
     if (!item) {
       return NextResponse.json({ error: 'No se encontró el recurso solicitado.' }, { status: 404 })
     }
@@ -19,9 +25,9 @@ export async function GET(request: Request, { params }: { params: { resource: st
 
 export async function PATCH(request: Request, { params }: { params: { resource: string; id: string } }) {
   try {
-    await requireAuthenticatedUser()
+    const user = await requireAuthenticatedUserWithRole(params.resource, 'update')
     const body = await request.json()
-    const updated = await updateResource(params.resource, params.id, body)
+    const updated = await updateResource(params.resource, params.id, body, user)
     return NextResponse.json(updated)
   } catch (error) {
     if (error instanceof ApiError) {
@@ -37,8 +43,8 @@ export async function PUT(request: Request, context: { params: { resource: strin
 
 export async function DELETE(request: Request, { params }: { params: { resource: string; id: string } }) {
   try {
-    await requireAuthenticatedUser()
-    const result = await deleteResource(params.resource, params.id)
+    const user = await requireAuthenticatedUserWithRole(params.resource, 'delete')
+    const result = await deleteResource(params.resource, params.id, user)
     return NextResponse.json(result)
   } catch (error) {
     if (error instanceof ApiError) {

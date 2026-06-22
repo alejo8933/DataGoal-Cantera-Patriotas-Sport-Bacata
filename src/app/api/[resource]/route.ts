@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server'
-import { listResource, createResource, requireAuthenticatedUser, ApiError } from '@/lib/api/resourceService'
+import {
+  listResource,
+  createResource,
+  requireAuthenticatedUserWithRole,
+  ApiError,
+} from '@/lib/api/resourceService'
 
 export async function GET(request: Request, { params }: { params: { resource: string } }) {
   try {
-    await requireAuthenticatedUser()
-    const items = await listResource(params.resource, new URL(request.url).searchParams)
+    const user = await requireAuthenticatedUserWithRole(params.resource, 'list')
+    const items = await listResource(params.resource, new URL(request.url).searchParams, user)
     return NextResponse.json(items)
   } catch (error) {
     if (error instanceof ApiError) {
@@ -16,9 +21,9 @@ export async function GET(request: Request, { params }: { params: { resource: st
 
 export async function POST(request: Request, { params }: { params: { resource: string } }) {
   try {
-    await requireAuthenticatedUser()
+    const user = await requireAuthenticatedUserWithRole(params.resource, 'create')
     const body = await request.json()
-    const created = await createResource(params.resource, body)
+    const created = await createResource(params.resource, body, user)
     return NextResponse.json(created, { status: 201 })
   } catch (error) {
     if (error instanceof ApiError) {
