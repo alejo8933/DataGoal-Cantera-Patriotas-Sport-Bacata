@@ -8,6 +8,8 @@ import { CreatePlayerSchema } from '@/types/domain/player.schema'
 import { CreateMatchSchema } from '@/types/domain/match.schema'
 import { CreateTrainingSchema } from '@/types/domain/training.schema'
 import { CreateTournamentSchema } from '@/types/domain/tournament.schema'
+import { CreateTeamPerformanceSchema } from '@/types/domain/team.schema'
+import { CreateEventSchema } from '@/types/domain/event.schema'
 
 /**
  * Mapeo de recursos a sus esquemas Zod de creación
@@ -18,6 +20,7 @@ export const resourceSchemas: Record<string, z.ZodSchema> = {
   partidos: CreateMatchSchema,
   entrenamientos: CreateTrainingSchema,
   torneos: CreateTournamentSchema,
+  rendimiento_equipos: CreateTeamPerformanceSchema,
 
   // Recursos que no tienen esquemas de validación específicos
   // (tabla genérica, sin validación fuerte)
@@ -29,7 +32,7 @@ export const resourceSchemas: Record<string, z.ZodSchema> = {
   convocatorias: z.record(z.any()),
   estadisticas: z.record(z.any()),
   evaluaciones: z.record(z.any()),
-  eventos_partido: z.record(z.any()),
+  eventos_partido: CreateEventSchema,
   gastos: z.record(z.any()),
   kpi_definiciones: z.record(z.any()),
   lesiones: z.record(z.any()),

@@ -8,6 +8,9 @@ import { playerService } from '@/services/playerService'
 import { matchService } from '@/services/matchService'
 import { trainingService } from '@/services/trainingService'
 import { tournamentService } from '@/services/tournamentService'
+import { teamService } from '@/services/teamService'
+import { eventService } from '@/services/eventService'
+import { statisticsService } from '@/services/statisticsService'
 
 export type ResourceService = {
   getAll?: (params?: any) => Promise<any[]>
@@ -30,6 +33,9 @@ export const serviceDispatcher: Record<string, ResourceService> = {
   partidos: matchService,
   entrenamientos: trainingService,
   torneos: tournamentService,
+  rendimiento_equipos: teamService,
+  eventos_partido: eventService,
+  estadisticas: statisticsService,
 
   // Recursos sin servicio específico (serán manejados directamente por Supabase en resourceService.ts)
   // Estos incluyen: asistencias, audit_logs, categorias, convocatorias, evaluaciones, estadisticas, etc.
