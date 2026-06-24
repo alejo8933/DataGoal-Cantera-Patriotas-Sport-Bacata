@@ -1,0 +1,64 @@
+{\rtf1\ansi\deff0
+{\fonttbl{\f0 Calibri;}}
+\fs24 \b API y Arquitectura Clean - Proyecto datagoal-patriotas\b0\par
+\par
+\b Resumen\b0\par
+Este documento recoge todos los elementos del proyecto relacionados con la API REST dinámica y la aplicación de principios de Clean Architecture: diseño de rutas genéricas, capas de repositorios y servicios, validación, control de acceso (RBAC), seguridad adicional (matriz), y métricas/estadísticas avanzadas.
+\par
+\b 1. Diseño general y responsabilidad de capas\b0\par
+- Capa API (Route handlers): \i src/app/api/[resource]/route.ts\i0 y \i src/app/api/[resource]/[id]/route.ts\i0. Estas rutas son genéricas y delegan en la capa de servicios para lógica de negocio y validación.\par
+- Capa de Servicios: \i src/lib/api/resourceService.ts\i0 es el front genérico que aplica validación, RBAC y hace dispatch a servicios de dominio; además existe un \i serviceDispatcher\i0 en \i src/lib/api/serviceDispatcher.ts\i0 que mapea recursos a servicios concretos (ej: \i playerService\i0, \i teamService\i0).\par
+- Repositorios: implementaciones concretas con Supabase se encuentran en \i src/repositories/supabase/*.ts\i0 (por ejemplo, \i SupabasePlayerRepository.ts\i0). Se añadieron interfaces en \i src/repositories/ (IAuthRepository.ts, ITeamRepository.ts, IEventRepository.ts)\i0 y nuevas implementaciones \i SupabaseTeamRepository.ts\i0 y \i SupabaseEventRepository.ts\i0.\par
+- Tipos y esquemas: todos los modelos/validaciones con Zod están en \i src/types/domain/*.schema.ts\i0 y el mapeo de esquemas para API en \i src/lib/api/schemas.ts\i0.\par
+\b 2. Rutas y flujo de petición\b0\par
+1. El handler en \i src/app/api/[resource]/route.ts\i0 recibe la petición.\par
+2. Verifica autenticación y RBAC con \i requireAuthenticatedUserWithRole(resource, operation)\i0 definido en \i src/lib/api/resourceService.ts\i0.\par
+3. Para POST/PATCH valida el body con Zod mediante \i validateResourcePayload(resource, body)\i0 (definido en \i src/lib/api/schemas.ts\i0).\par
+4. Llama al servicio de dominio mediante \i getServiceForResource(resource)\i0; si no hay servicio, usa acceso directo a Supabase mediante \i createClient()\i0 (fallback).\par
+5. Manejo de errores con la clase \i ApiError\i0 que devuelve JSON consistente y códigos HTTP adecuados.\par
+\b 3. Validación y esquemas Zod\b0\par
+- Esquemas de dominio: ejemplos están en \i src/types/domain/player.schema.ts\i0, \i match.schema.ts\i0, \i training.schema.ts\i0, \i team.schema.ts\i0 y \i event.schema.ts\i0.\par
+- Registro central: \i src/lib/api/schemas.ts\i0 mapea recursos a sus esquemas de creación/entrada. Agregar un recurso: crear el esquema en \i src/types/domain/\i0 y registrarlo en \i resourceSchemas\i0.\par
+\b 4. Control de acceso (RBAC)\b0\par
+- Configuración: \i src/lib/api/rbac.config.ts\i0 contiene permisos por rol (admin, entrenador, jugador) y sobrescrituras por recurso (resourceRolePermissions).\par
+- Uso: antes de ejecutar una operación sensible se llama a \i requireAuthenticatedUserWithRole(resource, operation)\i0 que obtiene el rol desde la tabla \i perfiles\i0 (a través de \i getUserProfile\i0) y valida con \i canPerformOperation(role, resource, operation)\i0.\par
+\b 5. Seguridad adicional: Matriz de Seguridad\b0\par
+- Implementación: \i src/lib/security/matrix.ts\i0 contiene utilidades para generar una matriz 5x5 de dígitos, parsear posiciones (A1..E5), y validar respuestas del usuario contra posiciones solicitadas.\par
+- Flujo de uso: el sistema puede mostrar la matriz (por ejemplo en el cliente) y durante autenticación exigir tres posiciones específicas; el backend valida con \i validateMatrixPositions(matrix, positions, values)\i0. Esto satisface requisitos de doble-factor estático tipo Matriz de Seguridad (R-019/R-020).\par
+\b 6. Recuperación de contraseña\b0\par
+- Repositorio: \i src/repositories/supabase/AuthRepository.ts\i0 implementa \i SupabaseAuthRepository.sendPasswordReset(email)\i0 usando \i supabase.auth.resetPasswordForEmail\i0 y el redirect configurado.\par
+- Acción servidor: \i src/services/actions/auth.ts\i0 contiene \i sendPasswordResetEmail(email)\i0 que puede ser invocada por server actions o API handlers para disparar el correo usando la clave de servicio y evitar RLS.\par
+\b 7. Nuevos Repositorios y Servicios\b0\par
+- \i ITeamRepository.ts\i0 y \i IEventRepository.ts\i0 (interfaces) se añadieron en \i src/repositories\i0.\par
+- Implementaciones Supabase: \i SupabaseTeamRepository.ts\i0 (tabla \i rendimiento_equipos\i0) y \i SupabaseEventRepository.ts\i0 (tabla \i eventos_partido\i0) en \i src/repositories/supabase\i0.\par
+- Servicios: \i teamService\i0 y \i eventService\i0 en \i src/services\i0 exponen métodos CRUD y helpers (insertGoal/insertCard) que son usados por el dispatch genérico.\par
+\b 8. Estadísticas avanzadas\b0\par
+- Extensiones: \i src/services/statisticsService.ts\i0 contiene ahora métodos como \i averageGoalsPerMatch(teamId?)\i0 y \i performancePercentage(teamId)\i0 que calculan promedios y rendimiento neto a partir de \i eventos_partido\i0. Estos métodos alimentan gráficos y paneles.\par
+\b 9. Integración con el dispatcher\b0\par
+- Registrar servicios: \i src/lib/api/serviceDispatcher.ts\i0 fue actualizado para incluir \i rendimiento_equipos: teamService\i0, \i eventos_partido: eventService\i0 y \i estadisticas: statisticsService\i0. Con esto cualquier petición a la API dinámica aprovecha la lógica ya existente.
+\par
+\b 10. Cómo añadir un nuevo recurso siguiendo Clean Architecture\b0\par
+1. Definir la interfaz de repositorio en \i src/repositories/I<Recurso>Repository.ts\i0.\par
+2. Implementar la versión Supabase en \i src/repositories/supabase/Supabase<Recurso>Repository.ts\i0.\par
+3. Crear el servicio en \i src/services/<recurso>Service.ts\i0 que use el repositorio.\par
+4. Registrar el servicio en \i src/lib/api/serviceDispatcher.ts\i0 con la clave del recurso.\par
+5. Añadir esquema Zod en \i src/types/domain/<recurso>.schema.ts\i0 y registrar en \i src/lib/api/schemas.ts\i0.\par
+6. Añadir configuraciones de RBAC en \i src/lib/api/rbac.config.ts\i0 si se requiere control distinto.\par
+7. Probar mediante las rutas dinámicas \i /api/<recurso>\i0 y \i /api/<recurso>/<id>\i0.\par
+\b 11. Pruebas y despliegue\b0\par
+- Local: arrancar la app y probar con curl/postman. Ejemplos en la documentación agregada del repo (API_REST_IMPROVEMENTS.md).\par
+- Recomendaciones: añadir tests unitarios para validación Zod y para lógica de RBAC; agregar pruebas de integración que ejerzan \i serviceDispatcher\i0 con servicios mock.\par
+\b 12. Referencias de archivos relevantes\b0\par
+- \i src/app/api/[resource]/route.ts\i0 - handler genérico base\par
+- \i src/app/api/[resource]/[id]/route.ts\i0 - handler con ID y PATCH/DELETE\par
+- \i src/lib/api/resourceService.ts\i0 - core de la API genérica (RBAC, validación, fallback Supabase)\par
+- \i src/lib/api/serviceDispatcher.ts\i0 - mapea recursos a servicios\par
+- \i src/lib/api/schemas.ts\i0 - mapeo de esquemas Zod\par
+- \i src/lib/api/rbac.config.ts\i0 - configuración RBAC\par
+- \i src/repositories/supabase/SupabaseTeamRepository.ts\i0, \i SupabaseEventRepository.ts\i0, \i SupabaseAuthRepository.ts\i0\par
+- \i src/services/teamService.ts\i0, \i eventService.ts\i0, \i statisticsService.ts\i0\par
+- \i src/lib/security/matrix.ts\i0 - utilidades Matriz de Seguridad\par
+\par
+---\par
+Documento generado automáticamente con enfoque en API y Clean Architecture.\par
+}

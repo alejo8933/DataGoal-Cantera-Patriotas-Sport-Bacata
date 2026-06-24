@@ -78,3 +78,29 @@ export async function getUserProfile(userId: string) {
 
   return data
 }
+
+/**
+ * Envía correo de recuperación de contraseña usando la cuenta de servicio
+ */
+export async function sendPasswordResetEmail(email: string) {
+  const { createClient } = await import('@supabase/supabase-js')
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    return { success: false, error: 'Credenciales de servicio no configuradas' }
+  }
+
+  const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey)
+
+  const { error } = await supabaseAdmin.auth.resetPasswordForEmail(email, {
+    redirectTo: process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/actualizar-password` : undefined,
+  } as any)
+
+  if (error) {
+    console.error('Error enviando correo de recuperación:', error)
+    return { success: false, error: error.message }
+  }
+
+  return { success: true }
+}
