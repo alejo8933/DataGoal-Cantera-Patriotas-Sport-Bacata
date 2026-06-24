@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Search, Edit2 } from 'lucide-react'
 import ModalEditarUsuario from './ModalEditarUsuario'
 import ModalEliminar from '@/components/features/ui/ModalEliminar'
-import type { UsuarioResponseDTO } from '@backend/modules/usuarios/dtos/UsuarioResponseDTO'
+import type { UsuarioResponseDTO } from 'datagoal-backend/modules/usuarios/dtos/UsuarioResponseDTO'
 
 interface TablaUsuariosProps {
   usuarios: UsuarioResponseDTO[]

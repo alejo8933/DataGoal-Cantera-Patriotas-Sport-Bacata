@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { UsuarioResponseDTO } from '@backend/modules/usuarios/dtos/UsuarioResponseDTO';
+import type { UsuarioResponseDTO } from 'datagoal-backend/modules/usuarios/dtos/UsuarioResponseDTO';
 import { obtenerPerfiles } from '@/lib/actions/usuarios.actions';
 
 export function useUsuarios() {

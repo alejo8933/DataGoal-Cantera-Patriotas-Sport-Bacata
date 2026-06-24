@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { SupabaseJugadorRepository } from '@backend/modules/jugadores/infrastructure/SupabaseJugadorRepository';
-import { GetJugadoresUseCase } from '@backend/modules/jugadores/use-cases/GetJugadoresUseCase';
-import { JugadorMapper } from '@backend/modules/jugadores/infrastructure/JugadorMapper';
-import type { JugadorResponseDTO } from '@backend/modules/jugadores/dtos/JugadorResponseDTO';
+import { SupabaseJugadorRepository } from 'datagoal-backend/modules/jugadores/infrastructure/SupabaseJugadorRepository';
+import { GetJugadoresUseCase } from 'datagoal-backend/modules/jugadores/use-cases/GetJugadoresUseCase';
+import { JugadorMapper } from 'datagoal-backend/modules/jugadores/infrastructure/JugadorMapper';
+import type { JugadorResponseDTO } from 'datagoal-backend/modules/jugadores/dtos/JugadorResponseDTO';
 
 export function useJugadores(categoriaId?: string) {
   const [jugadores, setJugadores] = useState<JugadorResponseDTO[]>([]);

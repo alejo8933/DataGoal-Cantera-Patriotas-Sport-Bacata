@@ -3,32 +3,32 @@
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { SupabaseUsuarioRepository } from '@backend/modules/usuarios/infrastructure/SupabaseUsuarioRepository';
-import { SupabaseAuthAdminRepository } from '@backend/modules/usuarios/infrastructure/SupabaseAuthAdminRepository';
-import { SupabaseMatrizSeguridadRepository } from '@backend/modules/usuarios/infrastructure/SupabaseMatrizSeguridadRepository';
-import { SupabaseAuthSessionRepository } from '@backend/modules/usuarios/infrastructure/SupabaseAuthSessionRepository';
-import { UsuarioMapper } from '@backend/modules/usuarios/infrastructure/UsuarioMapper';
-import { GetPerfilesUseCase } from '@backend/modules/usuarios/use-cases/GetPerfilesUseCase';
-import { GetPerfilByIdUseCase } from '@backend/modules/usuarios/use-cases/GetPerfilByIdUseCase';
-import { GetPerfilesCountUseCase } from '@backend/modules/usuarios/use-cases/GetPerfilesCountUseCase';
-import { CreateUsuarioUseCase } from '@backend/modules/usuarios/use-cases/CreateUsuarioUseCase';
-import { UpdateUsuarioUseCase } from '@backend/modules/usuarios/use-cases/UpdateUsuarioUseCase';
-import { SyncPerfilesUseCase } from '@backend/modules/usuarios/use-cases/SyncPerfilesUseCase';
-import { SyncUserProfileUseCase } from '@backend/modules/usuarios/use-cases/SyncUserProfileUseCase';
-import { UpdateMiPerfilUseCase } from '@backend/modules/usuarios/use-cases/UpdateMiPerfilUseCase';
-import { ValidarCodigoRegistroUseCase } from '@backend/modules/usuarios/use-cases/ValidarCodigoRegistroUseCase';
-import { GenerarMatrizUsuarioUseCase } from '@backend/modules/usuarios/use-cases/GenerarMatrizUsuarioUseCase';
-import { ObtenerMatrizUsuarioUseCase } from '@backend/modules/usuarios/use-cases/ObtenerMatrizUsuarioUseCase';
-import { ValidarRetoMatrizUseCase } from '@backend/modules/usuarios/use-cases/ValidarRetoMatrizUseCase';
-import { GetPerfilesByRolUseCase } from '@backend/modules/usuarios/use-cases/GetPerfilesByRolUseCase';
+import { SupabaseUsuarioRepository } from 'datagoal-backend/modules/usuarios/infrastructure/SupabaseUsuarioRepository';
+import { SupabaseAuthAdminRepository } from 'datagoal-backend/modules/usuarios/infrastructure/SupabaseAuthAdminRepository';
+import { SupabaseMatrizSeguridadRepository } from 'datagoal-backend/modules/usuarios/infrastructure/SupabaseMatrizSeguridadRepository';
+import { SupabaseAuthSessionRepository } from 'datagoal-backend/modules/usuarios/infrastructure/SupabaseAuthSessionRepository';
+import { UsuarioMapper } from 'datagoal-backend/modules/usuarios/infrastructure/UsuarioMapper';
+import { GetPerfilesUseCase } from 'datagoal-backend/modules/usuarios/use-cases/GetPerfilesUseCase';
+import { GetPerfilByIdUseCase } from 'datagoal-backend/modules/usuarios/use-cases/GetPerfilByIdUseCase';
+import { GetPerfilesCountUseCase } from 'datagoal-backend/modules/usuarios/use-cases/GetPerfilesCountUseCase';
+import { CreateUsuarioUseCase } from 'datagoal-backend/modules/usuarios/use-cases/CreateUsuarioUseCase';
+import { UpdateUsuarioUseCase } from 'datagoal-backend/modules/usuarios/use-cases/UpdateUsuarioUseCase';
+import { SyncPerfilesUseCase } from 'datagoal-backend/modules/usuarios/use-cases/SyncPerfilesUseCase';
+import { SyncUserProfileUseCase } from 'datagoal-backend/modules/usuarios/use-cases/SyncUserProfileUseCase';
+import { UpdateMiPerfilUseCase } from 'datagoal-backend/modules/usuarios/use-cases/UpdateMiPerfilUseCase';
+import { ValidarCodigoRegistroUseCase } from 'datagoal-backend/modules/usuarios/use-cases/ValidarCodigoRegistroUseCase';
+import { GenerarMatrizUsuarioUseCase } from 'datagoal-backend/modules/usuarios/use-cases/GenerarMatrizUsuarioUseCase';
+import { ObtenerMatrizUsuarioUseCase } from 'datagoal-backend/modules/usuarios/use-cases/ObtenerMatrizUsuarioUseCase';
+import { ValidarRetoMatrizUseCase } from 'datagoal-backend/modules/usuarios/use-cases/ValidarRetoMatrizUseCase';
+import { GetPerfilesByRolUseCase } from 'datagoal-backend/modules/usuarios/use-cases/GetPerfilesByRolUseCase';
 import {
   GetDestinatarioIdsUseCase,
   type RolDestino,
-} from '@backend/modules/usuarios/use-cases/GetDestinatarioIdsUseCase';
-import { CambiarPasswordUseCase } from '@backend/modules/usuarios/use-cases/CambiarPasswordUseCase';
-import { AppError } from '@backend/shared/errors/AppError';
-import type { UsuarioResponseDTO, PerfilResumenDTO } from '@backend/modules/usuarios/dtos/UsuarioResponseDTO';
-import type { RolUsuario } from '@backend/modules/usuarios/domain/entities/UsuarioEntity';
+} from 'datagoal-backend/modules/usuarios/use-cases/GetDestinatarioIdsUseCase';
+import { CambiarPasswordUseCase } from 'datagoal-backend/modules/usuarios/use-cases/CambiarPasswordUseCase';
+import { AppError } from 'datagoal-backend/shared/errors/AppError';
+import type { UsuarioResponseDTO, PerfilResumenDTO } from 'datagoal-backend/modules/usuarios/dtos/UsuarioResponseDTO';
+import type { RolUsuario } from 'datagoal-backend/modules/usuarios/domain/entities/UsuarioEntity';
 import type { MatrixData } from './usuarios.types';
 
 function getUsuarioRepo(supabase: Awaited<ReturnType<typeof createClient>>) {

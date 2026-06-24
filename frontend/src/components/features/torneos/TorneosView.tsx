@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { TorneoResponseDTO } from '@backend/modules/torneos/dtos/TorneoResponseDTO'
+import type { TorneoResponseDTO } from 'datagoal-backend/modules/torneos/dtos/TorneoResponseDTO'
 
 interface TorneosViewProps {
   torneos: TorneoResponseDTO[]

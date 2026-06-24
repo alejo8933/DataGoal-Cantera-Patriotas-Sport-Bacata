@@ -2,10 +2,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { notificarActividadAdmin } from "./notificaciones";
-import { SupabaseLesionRepository } from "@backend/modules/lesiones/infrastructure/SupabaseLesionRepository";
-import { GetLesionesUseCase } from "@backend/modules/lesiones/use-cases/GetLesionesUseCase";
-import { RegistrarLesionUseCase } from "@backend/modules/lesiones/use-cases/RegistrarLesionUseCase";
-import { EliminarLesionUseCase } from "@backend/modules/lesiones/use-cases/EliminarLesionUseCase";
+import { SupabaseLesionRepository } from "datagoal-backend/modules/lesiones/infrastructure/SupabaseLesionRepository";
+import { GetLesionesUseCase } from "datagoal-backend/modules/lesiones/use-cases/GetLesionesUseCase";
+import { RegistrarLesionUseCase } from "datagoal-backend/modules/lesiones/use-cases/RegistrarLesionUseCase";
+import { EliminarLesionUseCase } from "datagoal-backend/modules/lesiones/use-cases/EliminarLesionUseCase";
 
 export async function getLesiones() {
   const supabase = await createClient();

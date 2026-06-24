@@ -7,7 +7,7 @@ import {
   actualizarMiPerfilJugador,
   obtenerMiPerfilJugador,
 } from '@/lib/actions/jugadores.actions'
-import type { MiPerfilJugadorResponseDTO } from '@backend/modules/jugadores/dtos/PerfilJugadorResponseDTO'
+import type { MiPerfilJugadorResponseDTO } from 'datagoal-backend/modules/jugadores/dtos/PerfilJugadorResponseDTO'
 
 export default function JugadorPerfilPage() {
   const router = useRouter()

@@ -2,8 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { SupabaseCategoriaRepository } from '@backend/modules/categorias/infrastructure/SupabaseCategoriaRepository'
-import { UpsertEquipoUseCase } from '@backend/modules/categorias/use-cases/UpsertEquipoUseCase'
+import { SupabaseCategoriaRepository } from 'datagoal-backend/modules/categorias/infrastructure/SupabaseCategoriaRepository'
+import { UpsertEquipoUseCase } from 'datagoal-backend/modules/categorias/use-cases/UpsertEquipoUseCase'
 
 /**
  * Crea un nuevo equipo con validaciones de integridad y relación con técnico

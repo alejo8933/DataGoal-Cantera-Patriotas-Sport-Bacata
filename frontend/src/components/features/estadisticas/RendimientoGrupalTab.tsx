@@ -1,6 +1,6 @@
 'use client'
 
-import type { EstadisticaEquipoResponseDTO } from '@backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
+import type { EstadisticaEquipoResponseDTO } from 'datagoal-backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
 
 interface RendimientoGrupalTabProps {
   equipos: EstadisticaEquipoResponseDTO[]

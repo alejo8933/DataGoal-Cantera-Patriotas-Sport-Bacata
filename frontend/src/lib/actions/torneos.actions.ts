@@ -2,14 +2,14 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { SupabaseTorneoRepository } from '@backend/modules/torneos/infrastructure/SupabaseTorneoRepository'
-import { TorneoMapper } from '@backend/modules/torneos/infrastructure/TorneoMapper'
-import { GetTorneosUseCase } from '@backend/modules/torneos/use-cases/GetTorneosUseCase'
-import { GetTorneoByIdUseCase } from '@backend/modules/torneos/use-cases/GetTorneoByIdUseCase'
-import { CreateTorneoUseCase } from '@backend/modules/torneos/use-cases/CreateTorneoUseCase'
-import { UpdateTorneoUseCase } from '@backend/modules/torneos/use-cases/UpdateTorneoUseCase'
-import { DeleteTorneoUseCase } from '@backend/modules/torneos/use-cases/DeleteTorneoUseCase'
-import type { TorneoResponseDTO } from '@backend/modules/torneos/dtos/TorneoResponseDTO'
+import { SupabaseTorneoRepository } from 'datagoal-backend/modules/torneos/infrastructure/SupabaseTorneoRepository'
+import { TorneoMapper } from 'datagoal-backend/modules/torneos/infrastructure/TorneoMapper'
+import { GetTorneosUseCase } from 'datagoal-backend/modules/torneos/use-cases/GetTorneosUseCase'
+import { GetTorneoByIdUseCase } from 'datagoal-backend/modules/torneos/use-cases/GetTorneoByIdUseCase'
+import { CreateTorneoUseCase } from 'datagoal-backend/modules/torneos/use-cases/CreateTorneoUseCase'
+import { UpdateTorneoUseCase } from 'datagoal-backend/modules/torneos/use-cases/UpdateTorneoUseCase'
+import { DeleteTorneoUseCase } from 'datagoal-backend/modules/torneos/use-cases/DeleteTorneoUseCase'
+import type { TorneoResponseDTO } from 'datagoal-backend/modules/torneos/dtos/TorneoResponseDTO'
 
 async function createRepository() {
   const supabase = await createClient()

@@ -2,21 +2,21 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
-import { SupabaseJugadorRepository } from '@backend/modules/jugadores/infrastructure/SupabaseJugadorRepository';
-import { CreateJugadorUseCase } from '@backend/modules/jugadores/use-cases/CreateJugadorUseCase';
-import { UpdateJugadorUseCase } from '@backend/modules/jugadores/use-cases/UpdateJugadorUseCase';
-import { TransferirJugadorUseCase } from '@backend/modules/jugadores/use-cases/TransferirJugadorUseCase';
-import { JugadorMapper } from '@backend/modules/jugadores/infrastructure/JugadorMapper';
-import { GetJugadoresUseCase } from '@backend/modules/jugadores/use-cases/GetJugadoresUseCase';
-import { SupabasePerfilJugadorRepository } from '@backend/modules/jugadores/infrastructure/SupabasePerfilJugadorRepository';
-import { SupabaseJugadorAvatarStorage } from '@backend/modules/jugadores/infrastructure/SupabaseJugadorAvatarStorage';
-import { GetMiPerfilJugadorUseCase } from '@backend/modules/jugadores/use-cases/GetMiPerfilJugadorUseCase';
-import { UpdateMiPerfilJugadorUseCase } from '@backend/modules/jugadores/use-cases/UpdateMiPerfilJugadorUseCase';
-import { SupabaseUsuarioRepository } from '@backend/modules/usuarios/infrastructure/SupabaseUsuarioRepository';
-import { SupabaseAuthSessionRepository } from '@backend/modules/usuarios/infrastructure/SupabaseAuthSessionRepository';
-import { UsuarioMapper } from '@backend/modules/usuarios/infrastructure/UsuarioMapper';
-import type { MiPerfilJugadorResponseDTO } from '@backend/modules/jugadores/dtos/PerfilJugadorResponseDTO';
-import { AppError } from '@backend/shared/errors/AppError';
+import { SupabaseJugadorRepository } from 'datagoal-backend/modules/jugadores/infrastructure/SupabaseJugadorRepository';
+import { CreateJugadorUseCase } from 'datagoal-backend/modules/jugadores/use-cases/CreateJugadorUseCase';
+import { UpdateJugadorUseCase } from 'datagoal-backend/modules/jugadores/use-cases/UpdateJugadorUseCase';
+import { TransferirJugadorUseCase } from 'datagoal-backend/modules/jugadores/use-cases/TransferirJugadorUseCase';
+import { JugadorMapper } from 'datagoal-backend/modules/jugadores/infrastructure/JugadorMapper';
+import { GetJugadoresUseCase } from 'datagoal-backend/modules/jugadores/use-cases/GetJugadoresUseCase';
+import { SupabasePerfilJugadorRepository } from 'datagoal-backend/modules/jugadores/infrastructure/SupabasePerfilJugadorRepository';
+import { SupabaseJugadorAvatarStorage } from 'datagoal-backend/modules/jugadores/infrastructure/SupabaseJugadorAvatarStorage';
+import { GetMiPerfilJugadorUseCase } from 'datagoal-backend/modules/jugadores/use-cases/GetMiPerfilJugadorUseCase';
+import { UpdateMiPerfilJugadorUseCase } from 'datagoal-backend/modules/jugadores/use-cases/UpdateMiPerfilJugadorUseCase';
+import { SupabaseUsuarioRepository } from 'datagoal-backend/modules/usuarios/infrastructure/SupabaseUsuarioRepository';
+import { SupabaseAuthSessionRepository } from 'datagoal-backend/modules/usuarios/infrastructure/SupabaseAuthSessionRepository';
+import { UsuarioMapper } from 'datagoal-backend/modules/usuarios/infrastructure/UsuarioMapper';
+import type { MiPerfilJugadorResponseDTO } from 'datagoal-backend/modules/jugadores/dtos/PerfilJugadorResponseDTO';
+import { AppError } from 'datagoal-backend/shared/errors/AppError';
 
 function getPerfilJugadorDependencies(
   supabase: Awaited<ReturnType<typeof createClient>>

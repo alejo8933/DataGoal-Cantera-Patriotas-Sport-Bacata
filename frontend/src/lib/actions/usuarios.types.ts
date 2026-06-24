@@ -1,3 +1,3 @@
-import type { MatrizResponseDTO } from '@backend/modules/usuarios/dtos/MatrizResponseDTO';
+import type { MatrizResponseDTO } from 'datagoal-backend/modules/usuarios/dtos/MatrizResponseDTO';
 
 export type MatrixData = MatrizResponseDTO;

@@ -2,24 +2,24 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { SupabaseEntrenamientoRepository } from '@backend/modules/entrenamientos/infrastructure/SupabaseEntrenamientoRepository'
-import { EntrenamientoMapper } from '@backend/modules/entrenamientos/infrastructure/EntrenamientoMapper'
+import { SupabaseEntrenamientoRepository } from 'datagoal-backend/modules/entrenamientos/infrastructure/SupabaseEntrenamientoRepository'
+import { EntrenamientoMapper } from 'datagoal-backend/modules/entrenamientos/infrastructure/EntrenamientoMapper'
 
 // Casos de uso
-import { GetEntrenamientosUseCase } from '@backend/modules/entrenamientos/use-cases/GetEntrenamientosUseCase'
-import { GetEntrenamientoByIdUseCase } from '@backend/modules/entrenamientos/use-cases/GetEntrenamientoByIdUseCase'
-import { CreateEntrenamientoUseCase } from '@backend/modules/entrenamientos/use-cases/CreateEntrenamientoUseCase'
-import { UpdateEntrenamientoUseCase } from '@backend/modules/entrenamientos/use-cases/UpdateEntrenamientoUseCase'
-import { DeleteEntrenamientoUseCase } from '@backend/modules/entrenamientos/use-cases/DeleteEntrenamientoUseCase'
-import { GetJugadoresConAsistenciaUseCase } from '@backend/modules/entrenamientos/use-cases/GetJugadoresConAsistenciaUseCase'
-import { GuardarAsistenciasBulkUseCase } from '@backend/modules/entrenamientos/use-cases/GuardarAsistenciasBulkUseCase'
-import { GetReportesAsistenciaUseCase } from '@backend/modules/entrenamientos/use-cases/GetReportesAsistenciaUseCase'
-import { GetJugadoresRegistradosCountUseCase } from '@backend/modules/entrenamientos/use-cases/GetJugadoresRegistradosCountUseCase'
-import { GetRawAsistenciasUseCase } from '@backend/modules/entrenamientos/use-cases/GetRawAsistenciasUseCase'
-import { GetAsistenciasPorJugadorUseCase } from '@backend/modules/entrenamientos/use-cases/GetAsistenciasPorJugadorUseCase'
+import { GetEntrenamientosUseCase } from 'datagoal-backend/modules/entrenamientos/use-cases/GetEntrenamientosUseCase'
+import { GetEntrenamientoByIdUseCase } from 'datagoal-backend/modules/entrenamientos/use-cases/GetEntrenamientoByIdUseCase'
+import { CreateEntrenamientoUseCase } from 'datagoal-backend/modules/entrenamientos/use-cases/CreateEntrenamientoUseCase'
+import { UpdateEntrenamientoUseCase } from 'datagoal-backend/modules/entrenamientos/use-cases/UpdateEntrenamientoUseCase'
+import { DeleteEntrenamientoUseCase } from 'datagoal-backend/modules/entrenamientos/use-cases/DeleteEntrenamientoUseCase'
+import { GetJugadoresConAsistenciaUseCase } from 'datagoal-backend/modules/entrenamientos/use-cases/GetJugadoresConAsistenciaUseCase'
+import { GuardarAsistenciasBulkUseCase } from 'datagoal-backend/modules/entrenamientos/use-cases/GuardarAsistenciasBulkUseCase'
+import { GetReportesAsistenciaUseCase } from 'datagoal-backend/modules/entrenamientos/use-cases/GetReportesAsistenciaUseCase'
+import { GetJugadoresRegistradosCountUseCase } from 'datagoal-backend/modules/entrenamientos/use-cases/GetJugadoresRegistradosCountUseCase'
+import { GetRawAsistenciasUseCase } from 'datagoal-backend/modules/entrenamientos/use-cases/GetRawAsistenciasUseCase'
+import { GetAsistenciasPorJugadorUseCase } from 'datagoal-backend/modules/entrenamientos/use-cases/GetAsistenciasPorJugadorUseCase'
 
 // DTOs
-import type { EntrenamientoResponseDTO, JugadorAsistenciaDTO, ReporteAsistenciaDTO } from '@backend/modules/entrenamientos/dtos/EntrenamientoResponseDTO'
+import type { EntrenamientoResponseDTO, JugadorAsistenciaDTO, ReporteAsistenciaDTO } from 'datagoal-backend/modules/entrenamientos/dtos/EntrenamientoResponseDTO'
 
 async function createRepository() {
   const supabase = await createClient()

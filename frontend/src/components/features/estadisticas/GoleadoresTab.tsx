@@ -1,6 +1,6 @@
 'use client'
 
-import type { GoleadorResponseDTO } from '@backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
+import type { GoleadorResponseDTO } from 'datagoal-backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
 
 interface GoleadoresTabProps {
   goleadores: GoleadorResponseDTO[]

@@ -3,7 +3,7 @@
 import type {
   EstadisticaEquipoResponseDTO,
   GolPorMesResponseDTO,
-} from '@backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
+} from 'datagoal-backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
 import {
   CartesianGrid,
   Line,

@@ -3,7 +3,7 @@ import { syncUserProfile, getUserProfile } from '@/lib/actions/usuarios.actions'
 import type {
   AuthUserResponseDTO,
   RegisterUsuarioDTO,
-} from '@backend/modules/usuarios/dtos/AuthResponseDTO'
+} from 'datagoal-backend/modules/usuarios/dtos/AuthResponseDTO'
 
 // Browser adapter for Supabase Auth. Profile persistence and reads cross the
 // Server Action boundary and are handled by Usuarios use cases.

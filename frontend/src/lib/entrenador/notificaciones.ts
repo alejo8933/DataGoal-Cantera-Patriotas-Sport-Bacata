@@ -1,9 +1,9 @@
 "use server";
 import { createClient } from "@/lib/supabase/server";
 import { obtenerIdsPorRol } from "@/lib/actions/usuarios.actions";
-import { SupabaseNotificacionRepository } from "@backend/modules/notificaciones/infrastructure/SupabaseNotificacionRepository";
-import { GetNotificacionesDelUsuarioUseCase } from "@backend/modules/notificaciones/use-cases/GetNotificacionesDelUsuarioUseCase";
-import { EnviarNotificacionAUsuariosUseCase } from "@backend/modules/notificaciones/use-cases/EnviarNotificacionAUsuariosUseCase";
+import { SupabaseNotificacionRepository } from "datagoal-backend/modules/notificaciones/infrastructure/SupabaseNotificacionRepository";
+import { GetNotificacionesDelUsuarioUseCase } from "datagoal-backend/modules/notificaciones/use-cases/GetNotificacionesDelUsuarioUseCase";
+import { EnviarNotificacionAUsuariosUseCase } from "datagoal-backend/modules/notificaciones/use-cases/EnviarNotificacionAUsuariosUseCase";
 
 export async function getNotificaciones() {
   const supabase = await createClient();

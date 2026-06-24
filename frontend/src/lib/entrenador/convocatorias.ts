@@ -1,12 +1,12 @@
 "use server";
 import { createClient } from "@/lib/supabase/server";
 import { notificarActividadAdmin } from "./notificaciones";
-import { SupabasePartidoRepository } from "@backend/modules/partidos/infrastructure/SupabasePartidoRepository";
-import { SupabaseJugadorRepository } from "@backend/modules/jugadores/infrastructure/SupabaseJugadorRepository";
-import { SupabaseConvocatoriaRepository } from "@backend/modules/convocatorias/infrastructure/SupabaseConvocatoriaRepository";
-import { GetJugadoresParaConvocatoriaUseCase } from "@backend/modules/convocatorias/use-cases/GetJugadoresParaConvocatoriaUseCase";
-import { GuardarConvocatoriaUseCase } from "@backend/modules/convocatorias/use-cases/GuardarConvocatoriaUseCase";
-import { GetPartidoByIdUseCase } from "@backend/modules/partidos/use-cases/GetPartidoByIdUseCase";
+import { SupabasePartidoRepository } from "datagoal-backend/modules/partidos/infrastructure/SupabasePartidoRepository";
+import { SupabaseJugadorRepository } from "datagoal-backend/modules/jugadores/infrastructure/SupabaseJugadorRepository";
+import { SupabaseConvocatoriaRepository } from "datagoal-backend/modules/convocatorias/infrastructure/SupabaseConvocatoriaRepository";
+import { GetJugadoresParaConvocatoriaUseCase } from "datagoal-backend/modules/convocatorias/use-cases/GetJugadoresParaConvocatoriaUseCase";
+import { GuardarConvocatoriaUseCase } from "datagoal-backend/modules/convocatorias/use-cases/GuardarConvocatoriaUseCase";
+import { GetPartidoByIdUseCase } from "datagoal-backend/modules/partidos/use-cases/GetPartidoByIdUseCase";
 
 // Tipos de contrato explícitos. Las columnas asis/rend son null hasta que
 // el módulo convocatorias tenga un caso de uso de estadísticas conectado.

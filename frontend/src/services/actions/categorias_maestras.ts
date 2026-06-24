@@ -2,9 +2,9 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { SupabaseCategoriaRepository } from '@backend/modules/categorias/infrastructure/SupabaseCategoriaRepository'
-import { UpsertCategoriaMaestraUseCase } from '@backend/modules/categorias/use-cases/UpsertCategoriaMaestraUseCase'
-import { GetCategoriasYEquiposParaSelectoresUseCase } from '@backend/modules/categorias/use-cases/GetCategoriasYEquiposParaSelectoresUseCase'
+import { SupabaseCategoriaRepository } from 'datagoal-backend/modules/categorias/infrastructure/SupabaseCategoriaRepository'
+import { UpsertCategoriaMaestraUseCase } from 'datagoal-backend/modules/categorias/use-cases/UpsertCategoriaMaestraUseCase'
+import { GetCategoriasYEquiposParaSelectoresUseCase } from 'datagoal-backend/modules/categorias/use-cases/GetCategoriasYEquiposParaSelectoresUseCase'
 
 /**
  * Lectura para selectores en formularios (e.g. ModalEditarJugador).

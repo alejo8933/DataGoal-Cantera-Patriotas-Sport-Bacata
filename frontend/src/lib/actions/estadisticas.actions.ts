@@ -1,26 +1,26 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { SupabaseEstadisticaRepository } from '@backend/modules/estadisticas/infrastructure/SupabaseEstadisticaRepository'
-import { EstadisticaMapper } from '@backend/modules/estadisticas/infrastructure/EstadisticaMapper'
-import { GetEstadisticasJugadorUseCase } from '@backend/modules/estadisticas/use-cases/GetEstadisticasJugadorUseCase'
-import { GetEstadisticasJugadorPorUsuarioUseCase } from '@backend/modules/estadisticas/use-cases/GetEstadisticasJugadorPorUsuarioUseCase'
-import { GetEstadisticasJugadoresUseCase } from '@backend/modules/estadisticas/use-cases/GetEstadisticasJugadoresUseCase'
-import { GetGoleadoresUseCase } from '@backend/modules/estadisticas/use-cases/GetGoleadoresUseCase'
-import { GetGolesPorMesUseCase } from '@backend/modules/estadisticas/use-cases/GetGolesPorMesUseCase'
-import { GetEstadisticasEquipoUseCase } from '@backend/modules/estadisticas/use-cases/GetEstadisticasEquipoUseCase'
-import { GetResumenTemporadaUseCase } from '@backend/modules/estadisticas/use-cases/GetResumenTemporadaUseCase'
+import { SupabaseEstadisticaRepository } from 'datagoal-backend/modules/estadisticas/infrastructure/SupabaseEstadisticaRepository'
+import { EstadisticaMapper } from 'datagoal-backend/modules/estadisticas/infrastructure/EstadisticaMapper'
+import { GetEstadisticasJugadorUseCase } from 'datagoal-backend/modules/estadisticas/use-cases/GetEstadisticasJugadorUseCase'
+import { GetEstadisticasJugadorPorUsuarioUseCase } from 'datagoal-backend/modules/estadisticas/use-cases/GetEstadisticasJugadorPorUsuarioUseCase'
+import { GetEstadisticasJugadoresUseCase } from 'datagoal-backend/modules/estadisticas/use-cases/GetEstadisticasJugadoresUseCase'
+import { GetGoleadoresUseCase } from 'datagoal-backend/modules/estadisticas/use-cases/GetGoleadoresUseCase'
+import { GetGolesPorMesUseCase } from 'datagoal-backend/modules/estadisticas/use-cases/GetGolesPorMesUseCase'
+import { GetEstadisticasEquipoUseCase } from 'datagoal-backend/modules/estadisticas/use-cases/GetEstadisticasEquipoUseCase'
+import { GetResumenTemporadaUseCase } from 'datagoal-backend/modules/estadisticas/use-cases/GetResumenTemporadaUseCase'
 import type {
   EstadisticaEquipoResponseDTO,
   EstadisticaResponseDTO,
   GolPorMesResponseDTO,
   GoleadorResponseDTO,
   ResumenTemporadaResponseDTO,
-} from '@backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
+} from 'datagoal-backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
 import type {
   EstadisticasEquipoQuery,
   EstadisticasJugadorQuery,
-} from '@backend/modules/estadisticas/domain/ports/IEstadisticaRepository'
+} from 'datagoal-backend/modules/estadisticas/domain/ports/IEstadisticaRepository'
 
 async function createRepository() {
   const supabase = await createClient()

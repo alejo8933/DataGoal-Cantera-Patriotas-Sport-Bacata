@@ -19,7 +19,7 @@ import {
   PolarRadiusAxis,
   Radar,
 } from 'recharts'
-import type { EstadisticaResponseDTO } from '@backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
+import type { EstadisticaResponseDTO } from 'datagoal-backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
 
 interface AnalisisIndividualViewProps {
   estadisticas: EstadisticaResponseDTO[]

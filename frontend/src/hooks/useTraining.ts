@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { obtenerEntrenamientos } from '@/lib/actions/entrenamientos.actions'
-import type { EntrenamientoResponseDTO } from '@backend/modules/entrenamientos/dtos/EntrenamientoResponseDTO'
+import type { EntrenamientoResponseDTO } from 'datagoal-backend/modules/entrenamientos/dtos/EntrenamientoResponseDTO'
 
 export function useTraining(categoria?: string) {
   const [trainings, setTrainings] = useState<EntrenamientoResponseDTO[]>([])

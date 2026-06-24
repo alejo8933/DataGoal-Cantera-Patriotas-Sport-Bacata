@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { obtenerPartidos } from '@/lib/actions/partidos.actions'
-import type { PartidoResponseDTO } from '@backend/modules/partidos/dtos/PartidoResponseDTO'
+import type { PartidoResponseDTO } from 'datagoal-backend/modules/partidos/dtos/PartidoResponseDTO'
 
 export function usePartidos(categoria?: string) {
   const [partidos, setPartidos] = useState<PartidoResponseDTO[]>([])

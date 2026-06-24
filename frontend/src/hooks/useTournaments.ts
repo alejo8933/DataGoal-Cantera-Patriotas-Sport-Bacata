@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { obtenerTorneos } from '@/lib/actions/torneos.actions'
-import type { TorneoResponseDTO } from '@backend/modules/torneos/dtos/TorneoResponseDTO'
+import type { TorneoResponseDTO } from 'datagoal-backend/modules/torneos/dtos/TorneoResponseDTO'
 
 export function useTournaments(filtro?: 'proximos' | 'historial') {
   const [tournaments, setTournaments] = useState<TorneoResponseDTO[]>([])

@@ -2,12 +2,12 @@ import { createClient as createBrowserClient } from '@/lib/supabase/client';
 import type { IPlayerRepository } from '@/repositories/IPlayerRepository';
 import type { Player, CreatePlayer } from '@/types/domain/player.schema';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { SupabaseJugadorRepository } from '@backend/modules/jugadores/infrastructure/SupabaseJugadorRepository';
-import { GetJugadoresUseCase } from '@backend/modules/jugadores/use-cases/GetJugadoresUseCase';
-import { CreateJugadorUseCase } from '@backend/modules/jugadores/use-cases/CreateJugadorUseCase';
-import { UpdateJugadorUseCase } from '@backend/modules/jugadores/use-cases/UpdateJugadorUseCase';
-import { DeleteJugadorUseCase } from '@backend/modules/jugadores/use-cases/DeleteJugadorUseCase';
-import { JugadorMapper } from '@backend/modules/jugadores/infrastructure/JugadorMapper';
+import { SupabaseJugadorRepository } from 'datagoal-backend/modules/jugadores/infrastructure/SupabaseJugadorRepository';
+import { GetJugadoresUseCase } from 'datagoal-backend/modules/jugadores/use-cases/GetJugadoresUseCase';
+import { CreateJugadorUseCase } from 'datagoal-backend/modules/jugadores/use-cases/CreateJugadorUseCase';
+import { UpdateJugadorUseCase } from 'datagoal-backend/modules/jugadores/use-cases/UpdateJugadorUseCase';
+import { DeleteJugadorUseCase } from 'datagoal-backend/modules/jugadores/use-cases/DeleteJugadorUseCase';
+import { JugadorMapper } from 'datagoal-backend/modules/jugadores/infrastructure/JugadorMapper';
 
 export class SupabasePlayerRepository implements IPlayerRepository {
   constructor(private customClient?: SupabaseClient<any, any, any>) {}

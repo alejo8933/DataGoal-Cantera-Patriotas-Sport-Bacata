@@ -6,7 +6,7 @@ import type {
   EstadisticaEquipoResponseDTO,
   GolPorMesResponseDTO,
   GoleadorResponseDTO,
-} from '@backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
+} from 'datagoal-backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
 import { StatCard } from './StatCard'
 import { EstadisticasEquipoTab } from './EstadisticasEquipoTab'
 import { GoleadoresTab } from './GoleadoresTab'

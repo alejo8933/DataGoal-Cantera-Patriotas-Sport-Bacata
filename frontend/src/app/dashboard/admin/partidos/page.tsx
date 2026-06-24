@@ -1,6 +1,6 @@
 import { Trophy, MapPin, CalendarDays, Clock, ShieldAlert } from 'lucide-react'
 import { obtenerPartidos } from '@/lib/actions/partidos.actions'
-import type { PartidoResponseDTO } from '@backend/modules/partidos/dtos/PartidoResponseDTO'
+import type { PartidoResponseDTO } from 'datagoal-backend/modules/partidos/dtos/PartidoResponseDTO'
 import ModalCrearPartido from '@/components/features/partidos/ModalCrearPartido'
 import ModalEliminar from '@/components/features/ui/ModalEliminar'
 import ModalEditarPartido from '@/components/features/partidos/ModalEditarPartido'

@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts'
-import type { EstadisticaResponseDTO } from '@backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
+import type { EstadisticaResponseDTO } from 'datagoal-backend/modules/estadisticas/dtos/EstadisticaResponseDTO'
 
 interface JugadorEstadisticasViewProps {
   estadistica: EstadisticaResponseDTO | null

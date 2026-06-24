@@ -6,7 +6,7 @@ import { authService } from '@/services/api/authService'
 import type {
   AuthUserResponseDTO,
   RegisterUsuarioDTO,
-} from '@backend/modules/usuarios/dtos/AuthResponseDTO'
+} from 'datagoal-backend/modules/usuarios/dtos/AuthResponseDTO'
 
 export function useAuth() {
   const router = useRouter()
