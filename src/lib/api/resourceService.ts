@@ -16,7 +16,7 @@ function validateId(id: string) {
   return typeof id === 'string' && id.length > 0 && ID_PATTERN.test(id)
 }
 
-function buildQuery<T extends ResourceConfig>(config: T, supabase: ReturnType<typeof createClient>, params: URLSearchParams) {
+function buildQuery<T extends ResourceConfig>(config: T, supabase: Awaited<ReturnType<typeof createClient>>, params: URLSearchParams) {
   let query = supabase.from(config.tableName).select('*')
 
   for (const [name, value] of params.entries()) {
