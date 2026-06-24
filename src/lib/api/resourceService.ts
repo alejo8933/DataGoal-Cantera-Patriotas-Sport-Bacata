@@ -1,5 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
+import { getUserProfile } from '@/services/actions/auth'
 import { getResourceConfig, type ResourceConfig } from './resourceConfig'
+import { canPerformOperation, type UserRole } from './rbac.config'
+import { validateResourcePayload } from './schemas'
+import { getServiceForResource } from './serviceDispatcher'
+import { z } from 'zod'
 
 export class ApiError extends Error {
   status: number
@@ -8,6 +13,13 @@ export class ApiError extends Error {
     super(message)
     this.status = status
   }
+}
+
+export interface AuthenticatedUser {
+  id: string
+  email: string
+  rol: UserRole
+  activo: boolean
 }
 
 const ID_PATTERN = /^[a-zA-Z0-9_-]+$/
@@ -63,7 +75,7 @@ function sanitizePayload(payload: unknown, allowedColumns: string[]) {
   }, {})
 }
 
-export async function requireAuthenticatedUser() {
+export async function requireAuthenticatedUser(): Promise<AuthenticatedUser> {
   const supabase = await createClient()
   const { data, error } = await supabase.auth.getUser()
 
@@ -71,10 +83,47 @@ export async function requireAuthenticatedUser() {
     throw new ApiError('No autorizado. Inicia sesión para acceder a esta API.', 401)
   }
 
-  return data.user
+  // Obtiene el perfil del usuario con su rol
+  const profile = await getUserProfile(data.user.id)
+  
+  return {
+    id: data.user.id,
+    email: data.user.email || '',
+    rol: (profile?.rol || 'jugador') as UserRole,
+    activo: profile?.activo ?? true,
+  }
 }
 
-export async function listResource(resource: string, searchParams: URLSearchParams) {
+/**
+ * Obtiene el usuario autenticado con su rol y verifica que tiene permiso para la operación
+ * @param resource - El recurso que intenta acceder
+ * @param operation - La operación que intenta realizar
+ * @returns El usuario autenticado con su rol
+ * @throws ApiError si no está autenticado o no tiene permiso
+ */
+export async function requireAuthenticatedUserWithRole(
+  resource: string,
+  operation: 'list' | 'get' | 'create' | 'update' | 'delete'
+): Promise<AuthenticatedUser> {
+  const user = await requireAuthenticatedUser()
+
+  // Verifica que el usuario está activo
+  if (!user.activo) {
+    throw new ApiError('Tu usuario ha sido desactivado. Contacta al administrador.', 403)
+  }
+
+  // Verifica RBAC
+  if (!canPerformOperation(user.rol, resource, operation)) {
+    throw new ApiError(
+      `No tienes permiso para ${operation} este recurso. Rol: ${user.rol}`,
+      403
+    )
+  }
+
+  return user
+}
+
+export async function listResource(resource: string, searchParams: URLSearchParams, user: AuthenticatedUser) {
   const config = getResourceConfig(resource)
   if (!config) {
     throw new ApiError(`Recurso desconocido: ${resource}`, 404)
@@ -83,6 +132,18 @@ export async function listResource(resource: string, searchParams: URLSearchPara
     throw new ApiError(`Listado no permitido para el recurso: ${resource}`, 403)
   }
 
+  // Intenta usar el servicio de negocio si existe
+  const service = getServiceForResource(resource)
+  if (service?.getAll) {
+    try {
+      return await service.getAll()
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error en el servicio'
+      throw new ApiError(message, 500)
+    }
+  }
+
+  // Fallback: acceso directo a Supabase
   const supabase = await createClient()
   const query = buildQuery(config, supabase, searchParams)
   const { data, error } = await query
@@ -92,7 +153,7 @@ export async function listResource(resource: string, searchParams: URLSearchPara
   return data ?? []
 }
 
-export async function getResourceById(resource: string, id: string) {
+export async function getResourceById(resource: string, id: string, user: AuthenticatedUser) {
   if (!validateId(id)) {
     throw new ApiError('El identificador proporcionado no es válido.', 400)
   }
@@ -105,6 +166,18 @@ export async function getResourceById(resource: string, id: string) {
     throw new ApiError(`Acceso no permitido para el recurso: ${resource}`, 403)
   }
 
+  // Intenta usar el servicio de negocio si existe
+  const service = getServiceForResource(resource)
+  if (service?.getById) {
+    try {
+      return await service.getById(id)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error en el servicio'
+      throw new ApiError(message, 500)
+    }
+  }
+
+  // Fallback: acceso directo a Supabase
   const supabase = await createClient()
   const { data, error } = await supabase.from(config.tableName).select('*').eq('id', id).maybeSingle()
   if (error) {
@@ -113,7 +186,7 @@ export async function getResourceById(resource: string, id: string) {
   return data
 }
 
-export async function createResource(resource: string, payload: unknown) {
+export async function createResource(resource: string, payload: unknown, user: AuthenticatedUser) {
   const config = getResourceConfig(resource)
   if (!config) {
     throw new ApiError(`Recurso desconocido: ${resource}`, 404)
@@ -122,7 +195,31 @@ export async function createResource(resource: string, payload: unknown) {
     throw new ApiError(`Creación no permitida para el recurso: ${resource}`, 403)
   }
 
-  const record = sanitizePayload(payload, config.writableColumns)
+  // Valida el payload contra el esquema Zod del recurso
+  let validatedData: any
+  try {
+    validatedData = validateResourcePayload(resource, payload)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const message = error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join('; ')
+      throw new ApiError(`Validación fallida: ${message}`, 400)
+    }
+    throw new ApiError(error instanceof Error ? error.message : 'Error en validación', 400)
+  }
+
+  // Intenta usar el servicio de negocio si existe
+  const service = getServiceForResource(resource)
+  if (service?.create) {
+    try {
+      return await service.create(validatedData)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error en el servicio'
+      throw new ApiError(message, 500)
+    }
+  }
+
+  // Fallback: acceso directo a Supabase con campos permitidos
+  const record = sanitizePayload(validatedData, config.writableColumns)
   if (Object.keys(record).length === 0) {
     throw new ApiError('No se han proporcionado campos válidos para crear el recurso.', 400)
   }
@@ -136,7 +233,7 @@ export async function createResource(resource: string, payload: unknown) {
   return data
 }
 
-export async function updateResource(resource: string, id: string, payload: unknown) {
+export async function updateResource(resource: string, id: string, payload: unknown, user: AuthenticatedUser) {
   if (!validateId(id)) {
     throw new ApiError('El identificador proporcionado no es válido.', 400)
   }
@@ -149,7 +246,32 @@ export async function updateResource(resource: string, id: string, payload: unkn
     throw new ApiError(`Actualización no permitida para el recurso: ${resource}`, 403)
   }
 
-  const record = sanitizePayload(payload, config.writableColumns)
+  // Valida el payload contra el esquema Zod del recurso
+  let validatedData: any
+  try {
+    // Para updates, reutilizamos el esquema pero lo hacemos parcial
+    validatedData = validateResourcePayload(resource, payload)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const message = error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join('; ')
+      throw new ApiError(`Validación fallida: ${message}`, 400)
+    }
+    throw new ApiError(error instanceof Error ? error.message : 'Error en validación', 400)
+  }
+
+  // Intenta usar el servicio de negocio si existe
+  const service = getServiceForResource(resource)
+  if (service?.update) {
+    try {
+      return await service.update(id, validatedData)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error en el servicio'
+      throw new ApiError(message, 500)
+    }
+  }
+
+  // Fallback: acceso directo a Supabase
+  const record = sanitizePayload(validatedData, config.writableColumns)
   if (Object.keys(record).length === 0) {
     throw new ApiError('No se han proporcionado campos válidos para actualizar el recurso.', 400)
   }
@@ -169,7 +291,7 @@ export async function updateResource(resource: string, id: string, payload: unkn
   return data
 }
 
-export async function deleteResource(resource: string, id: string) {
+export async function deleteResource(resource: string, id: string, user: AuthenticatedUser) {
   if (!validateId(id)) {
     throw new ApiError('El identificador proporcionado no es válido.', 400)
   }
@@ -182,6 +304,19 @@ export async function deleteResource(resource: string, id: string) {
     throw new ApiError(`Eliminación no permitida para el recurso: ${resource}`, 403)
   }
 
+  // Intenta usar el servicio de negocio si existe
+  const service = getServiceForResource(resource)
+  if (service?.delete) {
+    try {
+      await service.delete(id)
+      return { success: true }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error en el servicio'
+      throw new ApiError(message, 500)
+    }
+  }
+
+  // Fallback: acceso directo a Supabase
   const supabase = await createClient()
   const { error } = await supabase.from(config.tableName).delete().eq('id', id)
   if (error) {

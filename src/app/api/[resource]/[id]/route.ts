@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server'
-import { getResourceById, updateResource, deleteResource, requireAuthenticatedUser, ApiError } from '@/lib/api/resourceService'
+import {
+  getResourceById,
+  updateResource,
+  deleteResource,
+  requireAuthenticatedUserWithRole,
+  ApiError,
+} from '@/lib/api/resourceService'
 
 /**
  * @swagger
@@ -87,8 +93,8 @@ import { getResourceById, updateResource, deleteResource, requireAuthenticatedUs
 export async function GET(request: Request, { params }: { params: Promise<{ resource: string; id: string }> }) {
   try {
     const { resource, id } = await params
-    await requireAuthenticatedUser()
-    const item = await getResourceById(resource, id)
+    const user = await requireAuthenticatedUserWithRole(resource, 'get')
+    const item = await getResourceById(resource, id, user)
     if (!item) {
       return NextResponse.json({ error: 'No se encontró el recurso solicitado.' }, { status: 404 })
     }
@@ -104,9 +110,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ reso
 export async function PATCH(request: Request, { params }: { params: Promise<{ resource: string; id: string }> }) {
   try {
     const { resource, id } = await params
-    await requireAuthenticatedUser()
+    const user = await requireAuthenticatedUserWithRole(resource, 'update')
     const body = await request.json()
-    const updated = await updateResource(resource, id, body)
+    const updated = await updateResource(resource, id, body, user)
     return NextResponse.json(updated)
   } catch (error) {
     if (error instanceof ApiError) {
@@ -298,8 +304,8 @@ export async function PUT(request: Request, context: { params: Promise<{ resourc
 export async function DELETE(request: Request, { params }: { params: Promise<{ resource: string; id: string }> }) {
   try {
     const { resource, id } = await params
-    await requireAuthenticatedUser()
-    const result = await deleteResource(resource, id)
+    const user = await requireAuthenticatedUserWithRole(resource, 'delete')
+    const result = await deleteResource(resource, id, user)
     return NextResponse.json(result)
   } catch (error) {
     if (error instanceof ApiError) {

@@ -1,3 +1,19 @@
+import { createClient } from '@/lib/supabase/server'
+import type { IAuthRepository } from '@/repositories/IAuthRepository'
+
+export class SupabaseAuthRepository implements IAuthRepository {
+  async sendPasswordReset(email: string): Promise<boolean> {
+    const supabase = await createClient()
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: process.env.NEXT_PUBLIC_BASE_URL ? `${process.env.NEXT_PUBLIC_BASE_URL}/actualizar-password` : undefined,
+    })
+    if (error) {
+      console.error('Error enviando reset password:', error.message)
+      return false
+    }
+    return true
+  }
+}
 import { createClient } from '@/lib/supabase/client'
 import type { IAuthRepository } from '@/repositories/IAuthRepository'
 import type { User, Register } from '@/types/domain/auth.schema'

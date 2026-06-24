@@ -1,3 +1,6 @@
+export interface IAuthRepository {
+  sendPasswordReset(email: string): Promise<boolean>
+}
 import type { User, Register } from '@/types/domain/auth.schema'
 
 export interface IAuthRepository {
