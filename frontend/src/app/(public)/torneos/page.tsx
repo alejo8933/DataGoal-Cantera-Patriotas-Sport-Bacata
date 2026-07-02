@@ -159,8 +159,9 @@ export default function TorneosPage() {
 
         {/* Título */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Torneos</h1>
-          <p className="text-base text-gray-500 mt-2">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-600 mb-2">Palmarés y competiciones</p>
+          <h1 className="text-3xl font-black tracking-tight text-carbon-900 md:text-4xl">Torneos</h1>
+          <p className="text-base text-carbon-500 mt-2 max-w-2xl">
             Conoce todos los torneos en los que participa Escuela Patriota Sport Bacatá en Bogotá: Liga de Bogotá, Torneo Maracana, DBS, Copa Simón Bolívar, Intercolegiados y Copa Distrital.
           </p>
         </div>
@@ -168,17 +169,17 @@ export default function TorneosPage() {
         {/* Palmarés */}
         <div className="grid grid-cols-3 gap-5 mb-8">
           {PALMARES.map((p) => (
-            <div key={p.titulo} className="rounded-lg border border-gray-200 p-7 text-center">
+            <div key={p.titulo} className="rounded-lg border border-carbon-200 p-7 text-center">
               <div className="text-3xl mb-2">{p.icon}</div>
-              <p className="text-3xl font-bold text-gray-900">{p.valor}</p>
-              <p className="text-sm font-medium text-gray-600 mt-1">{p.titulo}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{p.sub}</p>
+              <p className="text-3xl font-bold text-carbon-900">{p.valor}</p>
+              <p className="text-sm font-medium text-carbon-600 mt-1">{p.titulo}</p>
+              <p className="text-xs text-carbon-400 mt-0.5">{p.sub}</p>
             </div>
           ))}
         </div>
 
         {/* Tabs */}
-        <div className="flex rounded-lg border border-gray-200 overflow-hidden mb-8">
+        <div className="flex rounded-lg border border-carbon-200 overflow-hidden mb-8">
           {[
             { key: 'activos',   label: 'Torneos Activos' },
             { key: 'historial', label: 'Historial'       },
@@ -188,7 +189,7 @@ export default function TorneosPage() {
               key={t.key}
               onClick={() => setTab(t.key as typeof tab)}
               className={`flex-1 py-3 text-sm font-medium transition-colors ${
-                tab === t.key ? 'bg-gray-800 text-white' : 'bg-white text-gray-600 hover:bg-gray-50'
+                tab === t.key ? 'bg-brand-600 text-white' : 'bg-white text-carbon-600 hover:bg-carbon-50'
               }`}
             >
               {t.label}
@@ -200,34 +201,34 @@ export default function TorneosPage() {
         {tab === 'activos' && (
           <div className="grid md:grid-cols-2 gap-6">
             {ACTIVOS.map((t) => (
-              <div key={t.id} className="rounded-lg border border-gray-200 p-7 flex flex-col gap-4">
+              <div key={t.id} className="rounded-lg border border-carbon-200 p-7 flex flex-col gap-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-bold text-gray-900 text-base">{t.nombre}</p>
-                    <p className="text-sm text-gray-500 mt-0.5">{t.categoria}</p>
+                    <p className="font-bold text-carbon-900 text-base">{t.nombre}</p>
+                    <p className="text-sm text-carbon-500 mt-0.5">{t.categoria}</p>
                   </div>
                   <span className="shrink-0 rounded-full bg-green-100 text-green-700 text-xs font-medium px-3 py-1">
                     {t.estado}
                   </span>
                 </div>
 
-                <p className="text-sm text-gray-500">{t.descripcion}</p>
+                <p className="text-sm text-carbon-500">{t.descripcion}</p>
 
                 <div className="space-y-1.5">
-                  <p className="text-sm text-gray-500 flex items-center gap-2">
+                  <p className="text-sm text-carbon-500 flex items-center gap-2">
                     <Calendar size={14} /> {t.fechaInicio} → {t.fechaFin}
                   </p>
-                  <p className="text-sm text-gray-500 flex items-center gap-2">
+                  <p className="text-sm text-carbon-500 flex items-center gap-2">
                     <Users size={14} /> {t.equipos} equipos
                   </p>
-                  <p className="text-sm text-gray-500 flex items-center gap-2">
+                  <p className="text-sm text-carbon-500 flex items-center gap-2">
                     <Trophy size={14} /> {t.fase}
                   </p>
                 </div>
 
-                <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-sm text-gray-500">Posición Patriotas</span>
-                  <span className="font-bold text-gray-900 text-lg">{t.posicion}</span>
+                <div className="mt-auto pt-3 border-t border-carbon-100 flex items-center justify-between">
+                  <span className="text-sm text-carbon-500">Posición Patriotas</span>
+                  <span className="font-bold text-carbon-900 text-lg">{t.posicion}</span>
                 </div>
               </div>
             ))}
@@ -238,14 +239,14 @@ export default function TorneosPage() {
         {tab === 'historial' && (
           <div className="grid md:grid-cols-2 gap-6">
             {HISTORIAL.map((t) => (
-              <div key={t.id} className="rounded-lg border border-gray-200 p-7 flex flex-col gap-4">
+              <div key={t.id} className="rounded-lg border border-carbon-200 p-7 flex flex-col gap-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-bold text-gray-900 text-base">{t.nombre}</p>
-                    <p className="text-sm text-gray-500 mt-0.5">{t.categoria}</p>
+                    <p className="font-bold text-carbon-900 text-base">{t.nombre}</p>
+                    <p className="text-sm text-carbon-500 mt-0.5">{t.categoria}</p>
                   </div>
                   <div className="flex flex-col items-end gap-1">
-                    <span className="rounded-full bg-gray-100 text-gray-600 text-xs font-medium px-3 py-1">
+                    <span className="rounded-full bg-carbon-100 text-carbon-600 text-xs font-medium px-3 py-1">
                       {t.estado}
                     </span>
                     {t.esCampeon && (
@@ -256,20 +257,20 @@ export default function TorneosPage() {
 
                 <div className="flex gap-6">
                   <div>
-                    <p className="text-xs text-gray-400">Resultado</p>
-                    <p className={`font-bold text-base mt-0.5 ${t.esCampeon ? 'text-green-600' : 'text-gray-700'}`}>
+                    <p className="text-xs text-carbon-400">Resultado</p>
+                    <p className={`font-bold text-base mt-0.5 ${t.esCampeon ? 'text-green-600' : 'text-carbon-700'}`}>
                       {t.resultado}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400">Año</p>
-                    <p className="font-bold text-base text-gray-900 mt-0.5">{t.anio}</p>
+                    <p className="text-xs text-carbon-400">Año</p>
+                    <p className="font-bold text-base text-carbon-900 mt-0.5">{t.anio}</p>
                   </div>
                 </div>
 
-                <div className="rounded-lg bg-gray-50 px-4 py-3">
-                  <p className="text-xs text-gray-400 mb-1">⭐ Destacado</p>
-                  <p className="text-sm text-gray-600">{t.destacado}</p>
+                <div className="rounded-lg bg-carbon-50 px-4 py-3">
+                  <p className="text-xs text-carbon-400 mb-1">⭐ Destacado</p>
+                  <p className="text-sm text-carbon-600">{t.destacado}</p>
                 </div>
               </div>
             ))}
@@ -280,29 +281,29 @@ export default function TorneosPage() {
         {tab === 'proximos' && (
           <div className="grid md:grid-cols-2 gap-6">
             {PROXIMOS.map((t) => (
-              <div key={t.id} className="rounded-lg border border-gray-200 p-7 flex flex-col gap-4">
+              <div key={t.id} className="rounded-lg border border-carbon-200 p-7 flex flex-col gap-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-bold text-gray-900 text-base">{t.nombre}</p>
-                    <p className="text-sm text-gray-500 mt-0.5">{t.categoria}</p>
+                    <p className="font-bold text-carbon-900 text-base">{t.nombre}</p>
+                    <p className="text-sm text-carbon-500 mt-0.5">{t.categoria}</p>
                   </div>
                   <span className="shrink-0 rounded-full bg-blue-100 text-blue-700 text-xs font-medium px-3 py-1">
                     {t.estado}
                   </span>
                 </div>
 
-                <p className="text-sm text-gray-500">{t.descripcion}</p>
+                <p className="text-sm text-carbon-500">{t.descripcion}</p>
 
                 <div className="space-y-1.5">
-                  <p className="text-sm text-gray-500 flex items-center gap-2">
+                  <p className="text-sm text-carbon-500 flex items-center gap-2">
                     <Calendar size={14} /> {t.fechaInicio} → {t.fechaFin}
                   </p>
-                  <p className="text-sm text-gray-500 flex items-center gap-2">
+                  <p className="text-sm text-carbon-500 flex items-center gap-2">
                     <Trophy size={14} /> Clasificación: {t.clasificacion}
                   </p>
                 </div>
 
-                <div className="mt-auto pt-3 border-t border-gray-100">
+                <div className="mt-auto pt-3 border-t border-carbon-100">
                   <span className="inline-flex items-center gap-1.5 text-sm font-medium text-green-600">
                     <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
                     Patriotas clasificado

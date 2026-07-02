@@ -1,11 +1,89 @@
 @import "tailwindcss";
 
+@theme {
+  /* Carbón — base neutra premium, no gris de plantilla */
+  --color-carbon-950: #0a0b0d;
+  --color-carbon-900: #131417;
+  --color-carbon-800: #1c1e22;
+  --color-carbon-700: #292b30;
+  --color-carbon-600: #3d4046;
+  --color-carbon-500: #5a5d64;
+  --color-carbon-400: #83868c;
+  --color-carbon-300: #b0b2b6;
+  --color-carbon-200: #d8d9db;
+  --color-carbon-100: #eceded;
+  --color-carbon-50: #f7f7f8;
+
+  /* Rojo profundo — identidad principal del club, no rojo stock.
+     brand-800/900/950 reemplazan el negro puro en fondos oscuros
+     (hero, footer, CTA) para que incluso ahí predomine el rojo. */
+  --color-brand-950: #200507;
+  --color-brand-900: #3d0a0f;
+  --color-brand-800: #591019;
+  --color-brand-700: #6f0d16;
+  --color-brand-600: #96121d;
+  --color-brand-500: #b91423;
+  --color-brand-400: #d93444;
+  --color-brand-300: #f0707c;
+  --color-brand-200: #f7abb2;
+  --color-brand-100: #fbd9dc;
+  --color-brand-50: #fdeef0;
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #131417;
 }
 
 body {
   background-color: #ffffff;
-  color: #111111;
+  color: var(--color-carbon-900);
 }
+
+/* Patrón de puntos sutil para fondos premium (estilo Linear/Stripe) */
+.bg-dot-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+.bg-dot-grid-dark {
+  background-image: radial-gradient(rgba(10, 11, 13, 0.08) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+/* Textura de cancha de fútbol para fondos institucionales rojos */
+.bg-pitch-lines {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+.text-gradient-brand {
+  background-image: linear-gradient(90deg, #ffffff 0%, #ffe2e5 55%, var(--color-brand-300) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
